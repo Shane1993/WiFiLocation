@@ -6,63 +6,221 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context=".MainActivity">
+    android:background="#ffffebc7"
+   tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/scanAPBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/scan_access_point" />
-
-    <LinearLayout
-        android:id="@+id/scanAPLL"
-        android:layout_width="match_parent"
-        android:layout_height="380dp"
-        android:layout_below="@id/scanAPBtn">
-
-        <ScrollView
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/apTv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        </ScrollView>
-
-        <ScrollView
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/apSelectTv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        </ScrollView>
-
-    </LinearLayout>
-
-
-    <LinearLayout
+    <TabHost
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/scanAPLL"
-        android:orientation="horizontal">
+        android:id="@+id/tabHost"
 
-        <Button
-            android:id="@+id/getJSBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="执行云端代码" />
+        >
 
-        <TextView
-            android:id="@+id/msgTv"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-    </LinearLayout>
+            <FrameLayout
+                android:id="@android:id/tabcontent"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginBottom="5dp"
+                >
+
+                <com.example.lenovo.wifilocation.FirstLayout
+                    android:id="@+id/firstLayoutId"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="位置信息:"
+                        android:paddingLeft="10dp"
+                        android:paddingTop="10dp"
+                        android:textSize="20sp"/>
+
+                    <TextView
+                        android:id="@+id/myLocationInformationTv"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.8"
+                        android:gravity="center"
+                        android:text="O(∩_∩)O"
+                        android:textSize="20sp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="所处位置:"
+                        android:paddingLeft="10dp"
+                        android:paddingTop="10dp"
+                        android:textSize="20sp"/>
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/myLocationTv"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:hint="开始定位自己的位置..."
+                            android:textSize="25sp"/>
+
+
+                        <ImageButton
+                            android:id="@+id/startMyBtn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@android:drawable/btn_plus"
+                            android:layout_gravity="center"
+                            android:background="#ffffebc7" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:orientation="horizontal"
+                        android:paddingLeft="10dp"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:text="选择所处区域："
+                            android:textSize="25sp"
+                            android:gravity="center"
+                            android:textColor="#e7666665"
+                            />
+
+                        <Spinner
+                            android:id="@+id/areaSelectSp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:paddingRight="10dp"
+                            android:layout_gravity="center"
+                            android:paddingLeft="10dp"
+                            android:touchscreenBlocksFocus="false"
+                            android:background="#b0c6c6c6"
+                            android:layout_margin="5dp">
+
+                        </Spinner>
+
+                    </LinearLayout>
+
+
+                </com.example.lenovo.wifilocation.FirstLayout>
+
+                <com.example.lenovo.wifilocation.SecondLayout
+                    android:id="@+id/secondLayoutId"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="区域"
+                            android:textSize="35sp"
+                            android:textColor="#ff63ffa6"
+                            android:paddingLeft="20dp"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="选择"
+                            android:textSize="35sp"
+                            android:textColor="#ff63ffa6"
+                            android:paddingRight="20dp"
+                            />
+
+                    </LinearLayout>
+
+                    <ListView
+                        android:id="@+id/locationLV"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1">
+
+                    </ListView>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingBottom="15dp"
+                        >
+
+                        <Button
+                            android:id="@+id/createLocationBtn"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:alpha="0.8"
+                            android:background="#ffb8a7ff"
+                            android:textAppearance="@android:style/TextAppearance.Large"
+                            android:text="创建"
+                            />
+
+                        <Button
+                            android:id="@+id/measureBtn"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:alpha="0.8"
+                            android:background="#ffc1fff1"
+                            android:textAppearance="@android:style/TextAppearance.Large"
+                            android:text="采集"
+                            />
+
+                    </LinearLayout>
+
+
+
+                </com.example.lenovo.wifilocation.SecondLayout>
+
+                <LinearLayout
+                    android:id="@+id/thirdLayoutId"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                </LinearLayout>
+            </FrameLayout>
+
+            <TabWidget
+                android:id="@android:id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:alpha="0.8"
+                android:background="#ffc1fff1"
+                >
+            </TabWidget>
+
+
+        </LinearLayout>
+    </TabHost>
 </RelativeLayout>

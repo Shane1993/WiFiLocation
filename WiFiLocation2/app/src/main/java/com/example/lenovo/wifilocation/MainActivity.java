@@ -8,13 +8,19 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import net.lee.wifilocation.config.Config;
+import net.lee.wifilocation.model.LocationInfo;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -23,150 +29,129 @@ import cn.bmob.v3.Bmob;
 import cn.bmob.v3.listener.CloudCodeListener;
 
 
-public class MainActivity extends Activity implements View.OnClickListener {
-
-    private Button scanAPBtn;
-    private TextView apScanTv,apSelectTv;
-    private WifiManager wifiManager;
-    private List<ScanResult> apList,apSelectList;
-
-    private Button getJSBtn;
-    private TextView resultTv;
+public class MainActivity extends Activity  {
 
     //Bmob应用ID
     private String Bmob_AppId = "1b31c55348aeab1a15e5263e668fb88a";
+
+    //create the TabHost
+    private TabHost tabHost;
+
+    //create WifiManager
+    public static WifiManager wifiManager;
+    private String allAreaName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        scanAPBtn = (Button) findViewById(R.id.scanAPBtn);
-        apScanTv = (TextView) findViewById(R.id.apTv);
-        apSelectTv = (TextView) findViewById(R.id.apSelectTv);
-        wifiManager = (WifiManager) getSystemService(Service.WIFI_SERVICE);
-        apList = new ArrayList<ScanResult>();
-        apSelectList = new ArrayList<ScanResult>();
-
-        scanAPBtn.setOnClickListener(this);
-
-
+        //This is about Bmob
         Bmob.initialize(this, Bmob_AppId);
+        //Bind the service
+        wifiManager = (WifiManager) getSystemService(Service.WIFI_SERVICE);
 
-        getJSBtn = (Button) findViewById(R.id.getJSBtn);
-        resultTv = (TextView) findViewById(R.id.msgTv);
+        //Set the TabHost
+        tabHost = (TabHost) findViewById(R.id.tabHost);
 
-        getJSBtn.setOnClickListener(this);
+        tabHost.setup();
+
+        tabHost.addTab(tabHost.newTabSpec("start").setIndicator("定位").setContent(R.id.firstLayoutId));
+        tabHost.addTab(tabHost.newTabSpec("area").setIndicator("管理").setContent(R.id.secondLayoutId));
+        tabHost.addTab(tabHost.newTabSpec("person").setIndicator("预留").setContent(R.id.thirdLayoutId));
+
+
 
     }
 
-    public void toast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    public static LocationInfo getLocationInfo()
+    {
+        //Scan agian
+        wifiManager.startScan();
+
+        ScanResult[] scanResults = getAPSelectList(wifiManager.getScanResults());
+
+        if(scanResults != null) {
+            LocationInfo locationInfo = new LocationInfo();
+
+            locationInfo.setMac1(scanResults[0].BSSID);
+            locationInfo.setMac2(scanResults[1].BSSID);
+            locationInfo.setMac3(scanResults[2].BSSID);
+            locationInfo.setMac1Rssi(WifiManager.calculateSignalLevel(scanResults[0].level, 50));
+            locationInfo.setMac2Rssi(WifiManager.calculateSignalLevel(scanResults[1].level, 50));
+            locationInfo.setMac3Rssi(WifiManager.calculateSignalLevel(scanResults[2].level, 50));
+            locationInfo.setMacSort(scanResults[0].BSSID + scanResults[1].BSSID + scanResults[2].BSSID);
+
+            return locationInfo;
+        }
+        else
+        {
+            return null;
+        }
     }
 
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.scanAPBtn) {
-            if (wifiManager.getWifiState() == WifiManager.WIFI_STATE_DISABLED) {
-                wifiManager.setWifiEnabled(true);
-                toast("自动开启Wifi，请重新扫描");
-            } else if (wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLING) {
-                toast("Wifi正在打开中，请稍后再试");
-            } else if (wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED) {
-                //清除记录
-                apScanTv.setText("");
-                apSelectTv.setText("");
+    /**
+     *  Return the Access Point Array after sorting by RSSI
+     *  Attention:This return Array will only include 3 APs with the most RSSI
+     * @param list
+     * @return Scanresult[] after sorting by RSSI and Mac
+     */
+    public static ScanResult[] getAPSelectList(List<ScanResult> list) {
 
-                //将接收到的AP显示出来
-                apList = getSortList(wifiManager.getScanResults());
-                for (ScanResult scanResult : apList) {
-                    apScanTv.append("SSID : " + scanResult.SSID + "\nMAC : " + scanResult.BSSID + "\nRSSI : "
-                            + scanResult.level + "\n\n");
-                }
-
-                //将列表中信号最强的三个AP提取出来
-                apSelectList = getApSelectList(apList);
-                for (ScanResult scanResult : apSelectList) {
-                    apSelectTv.append("SSID : " + scanResult.SSID + "\nMAC : " + scanResult.BSSID + "\nRSSI : "
-                            + scanResult.level + "\n\n");
+        //The number of ap must be 3 or more
+        if(list.size() >= 3) {
+            ScanResult[] scanResults = new ScanResult[list.size()];
+            ScanResult[] selectResults = new ScanResult[3];
+            list.toArray(scanResults);
+            ScanResult temp;
+            //Sort the array by RSSI
+            for (int i = 0; i < scanResults.length - 1; i++) {
+                for (int j = i + 1; j < scanResults.length; j++) {
+                    if (scanResults[i].level < scanResults[j].level) {
+                        temp = scanResults[j];
+                        scanResults[j] = scanResults[i];
+                        scanResults[i] = temp;
+                    }
                 }
             }
 
-        } else if (v.getId() == R.id.getJSBtn) {
-            resultTv.setText("");
-            onRequestYun();
-        }
-    }
-    private List<ScanResult> getSortList(List<ScanResult> list)
-    {
-        List<ScanResult> sortList = new ArrayList<ScanResult>();
-        ScanResult[] scanResults = new ScanResult[list.size()];
-        list.toArray(scanResults);
-        ScanResult temp;
-        for(int i=0;i<scanResults.length-1;i++)
-        {
-            for(int j=i+1;j<scanResults.length;j++)
+            //Sort the array by Mac
+            for(int i = 0; i < 2; i++)
             {
-                if(scanResults[i].level < scanResults[j].level)
+                for(int j = i+1;j < 3; j++)
                 {
-                    temp = scanResults[j];
-                    scanResults[j] = scanResults[i];
-                    scanResults[i] = temp;
+                    //如果对比结果大于0说明前面字符串较大
+                    if(scanResults[i].BSSID.compareTo(scanResults[j].BSSID) > 0)
+                    {
+                        temp = scanResults[j];
+                        scanResults[j] = scanResults[i];
+                        scanResults[i] = temp;
+                    }
                 }
             }
+
+            for(int i = 0;i<3;i++)
+            {
+                selectResults[i] = scanResults[i];
+            }
+
+//        //Select the three APs
+//        for (int i = 0; i < 3; i++) {
+//            sortList.add(scanResults[i]);
+//        }
+//        //Select the three APs
+//        List<ScanResult> selectList = new ArrayList<ScanResult>();
+//        Iterator<ScanResult> iterator = list.iterator();
+//        for (int i = 0; i < 3; i++) {
+//            selectList.add(iterator.next());
+//        }
+
+            return selectResults;
         }
-        for(int i=0;i<scanResults.length;i++)
+        else
         {
-            sortList.add(scanResults[i]);
+            return null;
         }
-        return sortList;
-    }
-    private List<ScanResult> getApSelectList(List<ScanResult> list)
-    {
-        List<ScanResult> selectList = new ArrayList<ScanResult>();
-        Iterator<ScanResult> iterator = list.iterator();
-
-        for(int i=0;i<3;i++)
-        {
-            selectList.add(iterator.next());
-        }
-        return selectList;
     }
 
-
-
-    private void onRequestYun() {
-        // test对应你刚刚创建的云端代码名称
-        String cloudCodeName = "test";
-        JSONObject params = new JSONObject();
-        try {
-            // name是上传到云端的参数名称，值是bmob，云端代码可以通过调用request.body.name获取这个值
-            params.put("name", "bmob");
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        // 创建云端代码对象
-        AsyncCustomEndpoints cloudCode = new AsyncCustomEndpoints();
-        // 异步调用云端代码
-        cloudCode.callEndpoint(MainActivity.this, cloudCodeName, params,
-                new CloudCodeListener() {
-
-                    @Override
-                    public void onSuccess(Object arg0) {
-                        // TODO Auto-generated method stub
-                        resultTv.setText("云端代码执行成功：" + arg0.toString());
-
-                    }
-
-
-                    @Override
-                    public void onFailure(int i, String s) {
-                        Log.i("life", "" + s);
-                        resultTv.setText("云端代码执行失败：" + s);
-                    }
-
-                });
-
-    }
 }

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffebc7"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/scanAPLL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:orientation="vertical"
+        >
+
+
+
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:baselineAligned="false"
+            android:orientation="vertical">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/apTv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </ScrollView>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/scanAPLL"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="170dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="位置信息："
+                android:textAppearance="@android:style/TextAppearance.Large"
+                />
+
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/measureInfoTv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="请进行扫描" />
+            </ScrollView>
+
+            <ProgressBar
+                android:progress="0"
+                android:max="100"
+                android:paddingTop="40dp"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/measurePB"
+                android:layout_gravity="center_horizontal"
+                android:indeterminate="@bool/abc_action_bar_embed_tabs"
+                style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+                android:mirrorForRtl="false"
+                android:progressTint="#ff4fc4ff"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:id="@+id/scanAPTv"
+                    android:gravity="center"
+                    android:text="扫描："
+                    android:textSize="20sp"
+                    />
+
+                <ImageButton
+                    android:id="@+id/scanAPBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@android:drawable/btn_plus"
+                    android:paddingBottom="10dp"
+                    android:background="#ffffebc7" />
+
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/measureEt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="输入位置..." />
+
+            <ImageButton
+                android:id="@+id/getJSBtn"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+
+                android:src="@android:drawable/stat_sys_upload_done"
+                android:background="#ffb8a7ff"
+                android:scaleType="fitCenter" />
+
+            <ImageButton
+                android:id="@+id/measureCancleBtn"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                android:src="@drawable/abc_ic_clear_mtrl_alpha"
+                android:background="#ffb2ffa2"
+                android:scaleType="fitCenter" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</LinearLayout>
