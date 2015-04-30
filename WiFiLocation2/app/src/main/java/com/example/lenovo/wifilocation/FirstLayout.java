@@ -17,8 +17,9 @@ import android.widget.Toast;
 
 import net.lee.wifilocation.config.Config;
 import net.lee.wifilocation.model.LocationInfo;
+import net.lee.wifilocation.net.GetAreaName;
+import net.lee.wifilocation.net.GetLocation;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -70,34 +71,39 @@ public class FirstLayout extends LinearLayout implements View.OnClickListener, A
         spinner.setAdapter(arrayAdapter);
         spinner.setOnItemSelectedListener(this);
 
-        handler = new Handler()
-        {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                switch (msg.what)
-                {
-                    case Config.VALUE_GET_AREA_NAME:
-                        refreshSpinner();
-                        break;
-                    default:
-                        break;
-                }
-
-            }
-        };
+//        handler = new Handler()
+//        {
+//            @Override
+//            public void handleMessage(Message msg) {
+//                super.handleMessage(msg);
+//                if(msg.what == Config.VALUE_GET_AREA_NAME)
+//                {
+//                    refreshSpinner();
+//                }
+//
+//            }
+//        };
 
         //Because it's running in a new thread, so when you want to change you spinner you must wait for it's complete
         //So I decide to use the Handler
-        onRequestCloud(Config.KEY_GET_AREA_NAME);
-
+//        onRequestCloud(Config.ACTION_GET_AREA_NAME);
+        new GetAreaName(getContext(), new GetAreaName.SuccessCallback() {
+            @Override
+            public void onSuccess(String areaName) {
+                Config.valueAllAreaName = areaName;
+                refreshSpinner();
+            }
+        }, new GetAreaName.FailCallback() {
+            @Override
+            public void onFail(String failResult) {
+                Toast.makeText(getContext(),failResult,Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void refreshSpinner()
     {
-
         areaNameList.clear();
-
         //Set the first item is null
         areaNameList.add("无");
         arrayAdapter.notifyDataSetChanged();
@@ -107,25 +113,33 @@ public class FirstLayout extends LinearLayout implements View.OnClickListener, A
         //Add data to the spinner
         if(str != null)
         {
-            Log.i("JSONData",str);
-            //Get the all JSON format data
-            try {
-                JSONArray jsonArray = new JSONArray(str);
-
-                //Get every data
-                for(int i=0;i<jsonArray.length();i++)
-                {
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-                    areaNameList.add(jsonObject.getString(Config.KEY_AREA_NAME));
-                    //You must notify the adapter to set change!!!
-                    arrayAdapter.notifyDataSetChanged();
-                }
-
-
-            } catch (JSONException e) {
-                e.printStackTrace();
+            Log.i("String Data : AreaName",str);
+            String[] areaNameArray = str.split(",");
+            for(String s : areaNameArray)
+            {
+                areaNameList.add(s);
             }
+            arrayAdapter.notifyDataSetChanged();
+
+//            //Get the all JSON format data
+//            try {
+//                JSONArray jsonArray = new JSONArray(str);
+//
+//                //Get every data
+//                for(int i=0;i<jsonArray.length();i++)
+//                {
+//                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+//
+//                    areaNameList.add(jsonObject.getString(Config.KEY_AREA_NAME));
+//                }
+//                //You must notify the adapter to set change!!!
+//                arrayAdapter.notifyDataSetChanged();
+//
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+
+
         }
 
     }
@@ -137,7 +151,18 @@ public class FirstLayout extends LinearLayout implements View.OnClickListener, A
         {
             if(Config.valueAreaChanged)
             {
-                onRequestCloud(Config.KEY_GET_AREA_NAME);
+                new GetAreaName(getContext(), new GetAreaName.SuccessCallback() {
+                    @Override
+                    public void onSuccess(String areaName) {
+                        Config.valueAllAreaName = areaName;
+                        refreshSpinner();
+                    }
+                }, new GetAreaName.FailCallback() {
+                    @Override
+                    public void onFail(String failResult) {
+                        Toast.makeText(getContext(),failResult,Toast.LENGTH_SHORT).show();
+                    }
+                });
                 Config.valueAreaChanged = false;
             }
         }
@@ -171,14 +196,28 @@ public class FirstLayout extends LinearLayout implements View.OnClickListener, A
     {
         myLocationTv.setText("");
         locationInfo = MainActivity.getLocationInfo();
-        locationInfo.setAreaName(Config.valueSelectedAreaName);
-        myLocationInformationTv.setText("AreaName : " + locationInfo.getAreaName()
-                + "\nMac1 : " + locationInfo.getMac1() + ", RSSI:" + locationInfo.getMac1Rssi()
-                + "\nMac2 : " + locationInfo.getMac2() + ", RSSI:" + locationInfo.getMac2Rssi()
-                + "\nMac3 : " + locationInfo.getMac3() + ", RSSI:" + locationInfo.getMac3Rssi()
-                + "\nMacSort : " + locationInfo.getMacSort());
-        //Send the data to server for getting the locaiton from server
-        onRequestCloud(Config.KEY_GET_LOCATION);
+        if (locationInfo != null) {
+            locationInfo.setAreaName(Config.valueSelectedAreaName);
+            myLocationInformationTv.setText("AreaName : " + locationInfo.getAreaName()
+                    + "\nMac1 : " + locationInfo.getMac1() + ", RSSI:" + locationInfo.getMac1Rssi()
+                    + "\nMac2 : " + locationInfo.getMac2() + ", RSSI:" + locationInfo.getMac2Rssi()
+                    + "\nMac3 : " + locationInfo.getMac3() + ", RSSI:" + locationInfo.getMac3Rssi()
+                    + "\nMacSort : " + locationInfo.getMacSort());
+            //Send the data to server for getting the locaiton from server
+//            onRequestCloud(Config.ACTION_GET_LOCATION);
+            new GetLocation(getContext(), locationInfo.toJSONString(), new GetLocation.SuccessCallback() {
+                @Override
+                public void onSuccess(String locationName) {
+
+                    myLocationTv.setText(locationName);
+                }
+            }, new GetLocation.FailCallback() {
+                @Override
+                public void onFail(String failResult) {
+                    Toast.makeText(getContext(),failResult,Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
 
     }
 
@@ -187,14 +226,14 @@ public class FirstLayout extends LinearLayout implements View.OnClickListener, A
      */
     private void onRequestCloud(String name) {
 
-        if(name == Config.KEY_GET_AREA_NAME) {
+        if(name == Config.ACTION_GET_AREA_NAME) {
 
             // test对应你刚刚创建的云端代码名称
-            String cloudCodeName = "test";
+            String cloudCodeName = Config.KEY_CLOUD_CODE_NAME;
             JSONObject params = new JSONObject();
             try {
                 // name是上传到云端的参数名称，值是bmob，云端代码可以通过调用request.body.name获取这个值
-                params.put("name", Config.KEY_GET_AREA_NAME);
+                params.put(Config.KEY_REQUEST_BODY_NAME, Config.ACTION_GET_AREA_NAME);
             } catch (JSONException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -210,27 +249,21 @@ public class FirstLayout extends LinearLayout implements View.OnClickListener, A
                             // TODO Auto-generated method stub
 
                             System.out.println("FirstLayout's onSuccess");
+                            Config.valueAllAreaName = result.toString();
+                            handler.sendEmptyMessage(Config.VALUE_GET_AREA_NAME);
 
-                            try {
-                                JSONObject resultJSON = new JSONObject(result.toString());
-
-                                JSONArray resultArray = resultJSON.getJSONArray("results");
-                                if (resultArray != null) {
-
-                                    Config.valueAllAreaName = resultArray.toString();
-
-                                    System.out.println("AreaName : " + Config.valueAllAreaName);
-
-                                    //Invoke the handleMessage
-                                    handler.sendEmptyMessage(Config.VALUE_GET_AREA_NAME);
-                                }
-
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-
-                            }
-
+//                            try {
+//                                JSONObject resultJSON = new JSONObject(result.toString());
+//                                JSONArray resultArray = resultJSON.getJSONArray("results");
+//                                if (resultArray != null) {
+//                                    Config.valueAllAreaName = resultArray.toString();
+//                                    System.out.println("AreaName : " + Config.valueAllAreaName);
+//                                    //Invoke the handleMessage
+//                                    handler.sendEmptyMessage(Config.VALUE_GET_AREA_NAME);
+//                                }
+//                            } catch (JSONException e) {
+//                                e.printStackTrace();
+//                            }
                         }
 
 
@@ -242,15 +275,15 @@ public class FirstLayout extends LinearLayout implements View.OnClickListener, A
 
                     });
         }
-        else if(name == Config.KEY_GET_LOCATION)
+        else if(name == Config.ACTION_GET_LOCATION)
         {
             // test对应你刚刚创建的云端代码名称
-            String cloudCodeName = "test";
+            String cloudCodeName = Config.KEY_CLOUD_CODE_NAME;
             JSONObject params = new JSONObject();
             try {
                 // name是上传到云端的参数名称，值是bmob，云端代码可以通过调用request.body.name获取这个值
-                params.put("name", Config.KEY_GET_LOCATION);
-                params.put("information",locationInfo.toJSONString() );
+                params.put(Config.KEY_REQUEST_BODY_NAME, Config.ACTION_GET_LOCATION);
+                params.put(Config.KEY_REQUEST_BODY_INFORMATION,locationInfo.toJSONString() );
 
             } catch (JSONException e) {
                 // TODO Auto-generated catch block
@@ -262,8 +295,6 @@ public class FirstLayout extends LinearLayout implements View.OnClickListener, A
             cloudCode.callEndpoint(getContext(), cloudCodeName, params,
                     new CloudCodeListener() {
 
-
-
                         @Override
                         public void onSuccess(Object result) {
                             // TODO Auto-generated method stub
@@ -271,7 +302,6 @@ public class FirstLayout extends LinearLayout implements View.OnClickListener, A
                             System.out.println("FirstLayout's onSuccess");
                             myLocationTv.setText(result.toString());
                         }
-
 
                         @Override
                         public void onFailure(int i, String s) {

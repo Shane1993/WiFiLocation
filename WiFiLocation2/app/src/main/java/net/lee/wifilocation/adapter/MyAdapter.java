@@ -21,9 +21,9 @@ import java.util.List;
 public class MyAdapter extends BaseAdapter {
 
     private Context context;
-    private List<AreaInfo> list;
+    private List<String> list;
 
-    public MyAdapter(Context context, List<AreaInfo> list)
+    public MyAdapter(Context context, List<String> list)
     {
         this.context = context;
         this.list = list;
@@ -65,12 +65,12 @@ public class MyAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        AreaInfo areaInfo = (AreaInfo) getItem(position);
+        String areaName = (String) getItem(position);
 
-        viewHolder.nameTv.setText(areaInfo.getAreaName());
+        viewHolder.nameTv.setText(areaName);
 //        Log.i("MyAdapter","item.name " + areaListItem.getAreaName() + "\nitem.id " + areaListItem.getAreaId());
         //Set the STAR_ON only the item was select
-        if(areaInfo.getAreaName() == Config.valueManageSelectedAreaName)
+        if(areaName == Config.valueManageSelectedAreaName)
         {
             viewHolder.flagIv.setVisibility(View.VISIBLE);
         }

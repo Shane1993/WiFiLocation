@@ -118,7 +118,8 @@
                     android:layout_height="wrap_content"
                     android:src="@android:drawable/btn_plus"
                     android:paddingBottom="10dp"
-                    android:background="#ffffebc7" />
+                    android:background="#ffffebc7"
+                     />
 
             </LinearLayout>
 

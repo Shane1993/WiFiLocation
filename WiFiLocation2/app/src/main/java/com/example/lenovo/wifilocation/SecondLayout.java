@@ -21,8 +21,8 @@ import android.widget.Toast;
 import net.lee.wifilocation.adapter.MyAdapter;
 import net.lee.wifilocation.config.Config;
 import net.lee.wifilocation.model.AreaInfo;
+import net.lee.wifilocation.net.GetAreaName;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -36,7 +36,7 @@ import cn.bmob.v3.listener.SaveListener;
 /**
  * Created by lenovo on 2015/4/18.
  */
-public class SecondLayout extends LinearLayout implements View.OnClickListener, AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener{
+public class SecondLayout extends LinearLayout implements View.OnClickListener, AdapterView.OnItemClickListener{
 
     public SecondLayout(Context context) {
         super(context);
@@ -49,7 +49,7 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
     private Button measureBtn;
     private Button createBtn;
     private ListView locationListView;
-    private List<AreaInfo> locationList;
+    private List<String> locationList;
     private MyAdapter adapter;
     private Handler handler;
 
@@ -61,54 +61,76 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
         createBtn = (Button) findViewById(R.id.createLocationBtn);
         locationListView = (ListView) findViewById(R.id.locationLV);
 
-        locationList = new ArrayList<AreaInfo>();
+        locationList = new ArrayList<String>();
         adapter = new MyAdapter(getContext(),locationList);
         locationListView.setAdapter(adapter);
 
         measureBtn.setOnClickListener(this);
         createBtn.setOnClickListener(this);
         locationListView.setOnItemClickListener(this);
-        locationListView.setOnItemLongClickListener(this);
 
-        handler = new Handler()
-        {
+//        handler = new Handler()
+//        {
+//            @Override
+//            public void handleMessage(Message msg) {
+//                super.handleMessage(msg);
+//                if (msg.what == Config.VALUE_GET_AREA_NAME) {
+//                    refreshListView();
+//                }
+//            }
+//
+//        };
+//        onRequestCloud();
+
+        new GetAreaName(getContext(), new GetAreaName.SuccessCallback() {
             @Override
-            public void handleMessage(Message msg)
-            {
-                super.handleMessage(msg);
+            public void onSuccess(String areaName) {
+
+                Config.valueAllAreaName = areaName;
                 refreshListView();
             }
-
-        };
-        onRequestCloud();
-
+        }, new GetAreaName.FailCallback() {
+            @Override
+            public void onFail(String failResult) {
+                Toast.makeText(getContext(),failResult,Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 
     private void refreshListView()
     {
         String str = Config.valueAllAreaName;
-        System.out.println("FirstLayout : " + str);
+        System.out.println("SecondLayout : " + str);
         if(str != null)
         {
-            Log.i("JSONData",str);
-            //Get the all JSON format data
-            try {
-                JSONArray jsonArray = new JSONArray(str);
+            Log.i("StringData",str);
 
-                //Get every data
-                for(int i=0;i<jsonArray.length();i++)
-                {
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-                    AreaInfo areaInfo = new AreaInfo(jsonObject.getString(Config.KEY_AREA_NAME));
-                    locationList.add(areaInfo);
-                }
-                adapter.notifyDataSetChanged();
-
-            } catch (JSONException e) {
-                e.printStackTrace();
+            String[] areaNameArray = str.split(",");
+            for(String s : areaNameArray)
+            {
+                locationList.add(s);
             }
+            adapter.notifyDataSetChanged();
+
+
+//            //Get the all JSON format data
+//            try {
+//                JSONArray jsonArray = new JSONArray(str);
+//
+//                //Get every data
+//                for(int i=0;i<jsonArray.length();i++)
+//                {
+//                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+//
+//                    AreaInfo areaInfo = new AreaInfo(jsonObject.getString(Config.KEY_AREA_NAME));
+//                    locationList.add(areaInfo);
+//                }
+//                adapter.notifyDataSetChanged();
+//
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
         }
     }
 
@@ -150,11 +172,10 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
                             public void onSuccess() {
 
                                 Log.i("Bmob", "This is onSuccess");
-
-                                AreaInfo item = new AreaInfo(name);
-                                locationList.add(item);
+                                locationList.add(name);
                                 //Tell the FirstLayout's spinner that area have change
                                 Config.valueAreaChanged = true;
+                                adapter.notifyDataSetChanged();
                             }
 
                             @Override
@@ -185,11 +206,11 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
      */
     private void onRequestCloud() {
         // test对应你刚刚创建的云端代码名称
-        String cloudCodeName = "test";
+        String cloudCodeName = Config.KEY_CLOUD_CODE_NAME;
         JSONObject params = new JSONObject();
         try {
             // name是上传到云端的参数名称，值是bmob，云端代码可以通过调用request.body.name获取这个值
-            params.put("name", "getAreaName");
+            params.put(Config.KEY_REQUEST_BODY_NAME, Config.ACTION_GET_AREA_NAME);
         } catch (JSONException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -205,26 +226,28 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
                         // TODO Auto-generated method stub
 
                         System.out.println("This is MainActivity's onSuccess");
+                        Config.valueAllAreaName = result.toString();
+                        handler.sendEmptyMessage(Config.VALUE_GET_AREA_NAME);
 
-                        try {
-                            JSONObject resultJSON = new JSONObject(result.toString());
-
-                            JSONArray resultArray = resultJSON.getJSONArray("results");
-                            if(resultArray != null)
-                            {
-
-                                Config.valueAllAreaName = resultArray.toString();
-
-                                System.out.println("AreaName : " + Config.valueAllAreaName);
-
-                                handler.sendEmptyMessage(Config.VALUE_GET_AREA_NAME);
-                            }
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-
-                        }
+//                        try {
+//                            JSONObject resultJSON = new JSONObject(result.toString());
+//
+//                            JSONArray resultArray = resultJSON.getJSONArray("results");
+//                            if(resultArray != null)
+//                            {
+//
+//                                Config.valueAllAreaName = resultArray.toString();
+//
+//                                System.out.println("AreaName : " + Config.valueAllAreaName);
+//
+//                                handler.sendEmptyMessage(Config.VALUE_GET_AREA_NAME);
+//                            }
+//
+//
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//
+//                        }
 
                     }
 
@@ -249,23 +272,11 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-        Config.valueManageSelectedAreaName = locationList.get(position).getAreaName();
+        Config.valueManageSelectedAreaName = locationList.get(position);
 
         Log.i("onItemClick","Config.valueManageSelectedAreaName:" + Config.valueManageSelectedAreaName );
         //Tell the ListView I have changed! Refresh the list quickly.
         adapter.notifyDataSetChanged();
     }
 
-    /**
-     * This is long click on items
-     * @param parent
-     * @param view
-     * @param position
-     * @param id
-     * @return
-     */
-    @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        return false;
-    }
 }

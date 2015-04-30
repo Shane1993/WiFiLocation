@@ -1,8 +1,6 @@
 package com.example.lenovo.wifilocation;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,7 +8,6 @@ import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -20,11 +17,6 @@ import android.widget.Toast;
 import net.lee.wifilocation.config.Config;
 import net.lee.wifilocation.model.LocationInfo;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import cn.bmob.v3.AsyncCustomEndpoints;
-import cn.bmob.v3.listener.CloudCodeListener;
 import cn.bmob.v3.listener.SaveListener;
 
 /**
