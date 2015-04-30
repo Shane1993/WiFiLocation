@@ -2,8 +2,6 @@ package com.example.lenovo.wifilocation;
 
 import android.content.Context;
 import android.net.wifi.WifiManager;
-import android.os.Handler;
-import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -16,18 +14,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import net.lee.wifilocation.config.Config;
+import net.lee.wifilocation.model.DeviceLocation;
 import net.lee.wifilocation.model.LocationInfo;
 import net.lee.wifilocation.net.GetAreaName;
 import net.lee.wifilocation.net.GetLocation;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import cn.bmob.v3.AsyncCustomEndpoints;
-import cn.bmob.v3.listener.CloudCodeListener;
 
 /**
  * Created by lenovo on 2015/4/18.
@@ -45,13 +38,11 @@ public class FirstLayout extends LinearLayout implements View.OnClickListener, A
     private ImageButton startBtn;
     private TextView myLocationTv,myLocationInformationTv;
     private LocationInfo locationInfo;
+    private DeviceLocation deviceLocation = new DeviceLocation();
 
     private Spinner spinner;
     private List<String> areaNameList;
     private ArrayAdapter<String> arrayAdapter;
-
-    //Use the handler to change the UI after get the data from server
-    private Handler handler;
 
     @Override
     protected void onFinishInflate() {
@@ -71,22 +62,6 @@ public class FirstLayout extends LinearLayout implements View.OnClickListener, A
         spinner.setAdapter(arrayAdapter);
         spinner.setOnItemSelectedListener(this);
 
-//        handler = new Handler()
-//        {
-//            @Override
-//            public void handleMessage(Message msg) {
-//                super.handleMessage(msg);
-//                if(msg.what == Config.VALUE_GET_AREA_NAME)
-//                {
-//                    refreshSpinner();
-//                }
-//
-//            }
-//        };
-
-        //Because it's running in a new thread, so when you want to change you spinner you must wait for it's complete
-        //So I decide to use the Handler
-//        onRequestCloud(Config.ACTION_GET_AREA_NAME);
         new GetAreaName(getContext(), new GetAreaName.SuccessCallback() {
             @Override
             public void onSuccess(String areaName) {
@@ -121,25 +96,6 @@ public class FirstLayout extends LinearLayout implements View.OnClickListener, A
             }
             arrayAdapter.notifyDataSetChanged();
 
-//            //Get the all JSON format data
-//            try {
-//                JSONArray jsonArray = new JSONArray(str);
-//
-//                //Get every data
-//                for(int i=0;i<jsonArray.length();i++)
-//                {
-//                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-//
-//                    areaNameList.add(jsonObject.getString(Config.KEY_AREA_NAME));
-//                }
-//                //You must notify the adapter to set change!!!
-//                arrayAdapter.notifyDataSetChanged();
-//
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-
-
         }
 
     }
@@ -173,7 +129,7 @@ public class FirstLayout extends LinearLayout implements View.OnClickListener, A
 
         if(v.getId() == R.id.startMyBtn)
         {
-            if(Config.valueSelectedAreaName != null && Config.valueSelectedAreaName != "无") {
+            if(Config.valueSelectedAreaName != null && !Config.valueSelectedAreaName.equals("无")) {
                 if (MainActivity.wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED) {
 
                     showLocation();
@@ -207,9 +163,21 @@ public class FirstLayout extends LinearLayout implements View.OnClickListener, A
 //            onRequestCloud(Config.ACTION_GET_LOCATION);
             new GetLocation(getContext(), locationInfo.toJSONString(), new GetLocation.SuccessCallback() {
                 @Override
-                public void onSuccess(String locationName) {
-
+                public void onSuccess(int locationStatus, String locationName) {
                     myLocationTv.setText(locationName);
+
+                    switch (locationStatus)
+                    {
+                        case Config.RESULT_STATUS_SUCCESS:
+
+                            deviceLocation.setUserName(Config.getCacheUserName(getContext()));
+                            deviceLocation.setLocationName(locationName);
+                            deviceLocation.save(getContext());
+                            break;
+                        case Config.RESULT_STATUS_FAIL:
+
+                            break;
+                    }
                 }
             }, new GetLocation.FailCallback() {
                 @Override
@@ -219,98 +187,6 @@ public class FirstLayout extends LinearLayout implements View.OnClickListener, A
             });
         }
 
-    }
-
-    /**
-     * Invoke the cloud function
-     */
-    private void onRequestCloud(String name) {
-
-        if(name == Config.ACTION_GET_AREA_NAME) {
-
-            // test对应你刚刚创建的云端代码名称
-            String cloudCodeName = Config.KEY_CLOUD_CODE_NAME;
-            JSONObject params = new JSONObject();
-            try {
-                // name是上传到云端的参数名称，值是bmob，云端代码可以通过调用request.body.name获取这个值
-                params.put(Config.KEY_REQUEST_BODY_NAME, Config.ACTION_GET_AREA_NAME);
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            // 创建云端代码对象
-            AsyncCustomEndpoints cloudCode = new AsyncCustomEndpoints();
-            // 异步调用云端代码
-            cloudCode.callEndpoint(getContext(), cloudCodeName, params,
-                    new CloudCodeListener() {
-
-                        @Override
-                        public void onSuccess(Object result) {
-                            // TODO Auto-generated method stub
-
-                            System.out.println("FirstLayout's onSuccess");
-                            Config.valueAllAreaName = result.toString();
-                            handler.sendEmptyMessage(Config.VALUE_GET_AREA_NAME);
-
-//                            try {
-//                                JSONObject resultJSON = new JSONObject(result.toString());
-//                                JSONArray resultArray = resultJSON.getJSONArray("results");
-//                                if (resultArray != null) {
-//                                    Config.valueAllAreaName = resultArray.toString();
-//                                    System.out.println("AreaName : " + Config.valueAllAreaName);
-//                                    //Invoke the handleMessage
-//                                    handler.sendEmptyMessage(Config.VALUE_GET_AREA_NAME);
-//                                }
-//                            } catch (JSONException e) {
-//                                e.printStackTrace();
-//                            }
-                        }
-
-
-                        @Override
-                        public void onFailure(int i, String s) {
-
-                            Toast.makeText(getContext(), "获取数据失败 : " + s, Toast.LENGTH_SHORT).show();
-                        }
-
-                    });
-        }
-        else if(name == Config.ACTION_GET_LOCATION)
-        {
-            // test对应你刚刚创建的云端代码名称
-            String cloudCodeName = Config.KEY_CLOUD_CODE_NAME;
-            JSONObject params = new JSONObject();
-            try {
-                // name是上传到云端的参数名称，值是bmob，云端代码可以通过调用request.body.name获取这个值
-                params.put(Config.KEY_REQUEST_BODY_NAME, Config.ACTION_GET_LOCATION);
-                params.put(Config.KEY_REQUEST_BODY_INFORMATION,locationInfo.toJSONString() );
-
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            // 创建云端代码对象
-            AsyncCustomEndpoints cloudCode = new AsyncCustomEndpoints();
-            // 异步调用云端代码
-            cloudCode.callEndpoint(getContext(), cloudCodeName, params,
-                    new CloudCodeListener() {
-
-                        @Override
-                        public void onSuccess(Object result) {
-                            // TODO Auto-generated method stub
-
-                            System.out.println("FirstLayout's onSuccess");
-                            myLocationTv.setText(result.toString());
-                        }
-
-                        @Override
-                        public void onFailure(int i, String s) {
-
-                            Toast.makeText(getContext(), "获取数据失败 : " + s, Toast.LENGTH_SHORT).show();
-                        }
-
-                    });
-        }
     }
 
     @Override

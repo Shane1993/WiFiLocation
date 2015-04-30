@@ -4,8 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Message;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -23,14 +21,9 @@ import net.lee.wifilocation.config.Config;
 import net.lee.wifilocation.model.AreaInfo;
 import net.lee.wifilocation.net.GetAreaName;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.bmob.v3.AsyncCustomEndpoints;
-import cn.bmob.v3.listener.CloudCodeListener;
 import cn.bmob.v3.listener.SaveListener;
 
 /**
@@ -51,7 +44,6 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
     private ListView locationListView;
     private List<String> locationList;
     private MyAdapter adapter;
-    private Handler handler;
 
     @Override
     protected void onFinishInflate() {
@@ -68,19 +60,6 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
         measureBtn.setOnClickListener(this);
         createBtn.setOnClickListener(this);
         locationListView.setOnItemClickListener(this);
-
-//        handler = new Handler()
-//        {
-//            @Override
-//            public void handleMessage(Message msg) {
-//                super.handleMessage(msg);
-//                if (msg.what == Config.VALUE_GET_AREA_NAME) {
-//                    refreshListView();
-//                }
-//            }
-//
-//        };
-//        onRequestCloud();
 
         new GetAreaName(getContext(), new GetAreaName.SuccessCallback() {
             @Override
@@ -113,24 +92,6 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
             }
             adapter.notifyDataSetChanged();
 
-
-//            //Get the all JSON format data
-//            try {
-//                JSONArray jsonArray = new JSONArray(str);
-//
-//                //Get every data
-//                for(int i=0;i<jsonArray.length();i++)
-//                {
-//                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-//
-//                    AreaInfo areaInfo = new AreaInfo(jsonObject.getString(Config.KEY_AREA_NAME));
-//                    locationList.add(areaInfo);
-//                }
-//                adapter.notifyDataSetChanged();
-//
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
         }
     }
 
@@ -201,66 +162,6 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
         }
     }
 
-    /**
-     * Invoke the cloud function
-     */
-    private void onRequestCloud() {
-        // test对应你刚刚创建的云端代码名称
-        String cloudCodeName = Config.KEY_CLOUD_CODE_NAME;
-        JSONObject params = new JSONObject();
-        try {
-            // name是上传到云端的参数名称，值是bmob，云端代码可以通过调用request.body.name获取这个值
-            params.put(Config.KEY_REQUEST_BODY_NAME, Config.ACTION_GET_AREA_NAME);
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        // 创建云端代码对象
-        AsyncCustomEndpoints cloudCode = new AsyncCustomEndpoints();
-        // 异步调用云端代码
-        cloudCode.callEndpoint(getContext(), cloudCodeName, params,
-                new CloudCodeListener() {
-
-                    @Override
-                    public void onSuccess(Object result) {
-                        // TODO Auto-generated method stub
-
-                        System.out.println("This is MainActivity's onSuccess");
-                        Config.valueAllAreaName = result.toString();
-                        handler.sendEmptyMessage(Config.VALUE_GET_AREA_NAME);
-
-//                        try {
-//                            JSONObject resultJSON = new JSONObject(result.toString());
-//
-//                            JSONArray resultArray = resultJSON.getJSONArray("results");
-//                            if(resultArray != null)
-//                            {
-//
-//                                Config.valueAllAreaName = resultArray.toString();
-//
-//                                System.out.println("AreaName : " + Config.valueAllAreaName);
-//
-//                                handler.sendEmptyMessage(Config.VALUE_GET_AREA_NAME);
-//                            }
-//
-//
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//
-//                        }
-
-                    }
-
-
-                    @Override
-                    public void onFailure(int i, String s) {
-
-                        Toast.makeText(getContext(),"获取数据失败 : " + s,Toast.LENGTH_SHORT).show();
-                    }
-
-                });
-
-    }
 
     /**
      * This is short click on items

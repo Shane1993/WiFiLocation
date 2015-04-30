@@ -7,8 +7,8 @@ import cn.bmob.v3.BmobObject;
  */
 public class LocationInfo extends BmobObject {
 
-    private int id = 0;
-    private String name = "null";
+    private String userName = "null";
+    private String locationName = "null";
     private String areaName = "null";
     private String mac1;
     private String mac2;
@@ -20,9 +20,9 @@ public class LocationInfo extends BmobObject {
 
     public LocationInfo(){}
 
-    public LocationInfo(int id, String name, String areaName, String mac1, String mac2, String mac3, String macSort, int mac1Rssi, int mac2Rssi, int mac3Rssi) {
-        this.id = id;
-        this.name = name;
+    public LocationInfo(String userName, String locationName, String areaName, String mac1, String mac2, String mac3, String macSort, int mac1Rssi, int mac2Rssi, int mac3Rssi) {
+        this.userName = userName;
+        this.locationName = locationName;
         this.areaName = areaName;
         this.mac1 = mac1;
         this.mac2 = mac2;
@@ -33,20 +33,20 @@ public class LocationInfo extends BmobObject {
         this.mac3Rssi = mac3Rssi;
     }
 
-    public int getId() {
-        return id;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public String getName() {
-        return name;
+    public String getLocationName() {
+        return locationName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
     }
 
     public String getAreaName() {
@@ -116,7 +116,7 @@ public class LocationInfo extends BmobObject {
     //将toString重写为返回一个JSON数据类型
     @Override
     public String toString() {
-        return "{id:" + id + ",name:" + name + ",areaName:" + areaName
+        return "{userName:" + userName + ",locationName:" + locationName + ",areaName:" + areaName
                 + ",mac1:" + mac1 + ",mac1Rssi:" + mac1Rssi
                 + ",mac2:" + mac2 + ",mac2Rssi:" + mac2Rssi
                 + ",mac3:" + mac3 + ",mac3Rssi:" + mac3Rssi
@@ -125,7 +125,7 @@ public class LocationInfo extends BmobObject {
 
     public String toJSONString() {
 
-        return "{\"id\":" + id + ",\"name\":\"" + name + "\",\"areaName\":\"" + areaName
+        return "{\"userName\":" + userName + ",\"locationName\":\"" + locationName + "\",\"areaName\":\"" + areaName
                 + "\",\"mac1\":\"" + mac1 + "\",\"mac1Rssi\":\"" + mac1Rssi
                 + "\",\"mac2\":\"" + mac2 + "\",\"mac2Rssi\":\"" + mac2Rssi
                 + "\",\"mac3\":\"" + mac3 + "\",\"mac3Rssi\":\"" + mac3Rssi

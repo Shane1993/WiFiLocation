@@ -106,7 +106,7 @@ public class MeasureActivity extends Activity implements View.OnClickListener{
             else
             {
                 //Set the location name
-                locationInfoFinal.setName(measureEt.getText().toString());
+                locationInfoFinal.setLocationName(measureEt.getText().toString());
                 locationInfoFinal.save(MeasureActivity.this, new SaveListener() {
                     @Override
                     public void onSuccess() {

@@ -36,20 +36,22 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         Intent intent = getIntent();
-        String token = intent.getStringExtra(Config.KEY_TOKEN);
-        String userName = intent.getStringExtra(Config.KEY_USER_NAME);
+        final String token = intent.getStringExtra(Config.KEY_TOKEN);
+        String userName = intent.getStringExtra(Config.KEY_REQUEST_BODY_USERNAME);
         System.out.println("========>token : " + token);
         System.out.println("========>userName : " + userName);
 
-//        onRequestCloud(token);
         new VerifyToken(MainActivity.this, token, new VerifyToken.SuccessCallback() {
             @Override
             public void onSuccess() {
 
+                System.out.println("==========>This is verifyToken success, token + " + token);
             }
         }, new VerifyToken.FailCallback() {
             @Override
             public void onFail(String failResult) {
+                System.out.println("==========>This is verifyToken fail, token : " + token);
+
                 Toast.makeText(MainActivity.this,failResult,Toast.LENGTH_SHORT).show();
 
                 Intent intent = new Intent(MainActivity.this, LoginAty.class);
@@ -73,62 +75,6 @@ public class MainActivity extends Activity {
 
     }
 
-    /**
-     * Verify whether the token is valid
-     */
-    private void onRequestCloud(String token) {
-        // test对应你刚刚创建的云端代码名称
-        String cloudCodeName = Config.KEY_CLOUD_CODE_NAME;
-        JSONObject params = new JSONObject();
-        try {
-            // name是上传到云端的参数名称，值是bmob，云端代码可以通过调用request.body.name获取这个值
-            params.put(Config.KEY_REQUEST_BODY_NAME, Config.KEY_VERIFY_TOKEN);
-            params.put(Config.KEY_REQUEST_BODY_TOKEN, token);
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        // 创建云端代码对象
-        AsyncCustomEndpoints cloudCode = new AsyncCustomEndpoints();
-        // 异步调用云端代码
-        cloudCode.callEndpoint(MainActivity.this, cloudCodeName, params,
-                new CloudCodeListener() {
-
-                    @Override
-                    public void onSuccess(Object result) {
-                        // TODO Auto-generated method stub
-
-                        System.out.println("This is verifyToken's onSuccess : " + result.toString());
-
-                        try {
-                            JSONObject jsonObject = new JSONObject(result.toString());
-
-                            int statusResult = jsonObject.getInt("status");
-                            if (statusResult == Config.RESULT_STATUS_SUCCESS) {
-
-                            } else if (statusResult == Config.RESULT_INVALID_TOKEN) {
-                                Toast.makeText(MainActivity.this, "验证过期，请重新登录", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(MainActivity.this, LoginAty.class);
-                                startActivity(intent);
-
-                                finish();
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-
-                    @Override
-                    public void onFailure(int i, String s) {
-
-                        Toast.makeText(MainActivity.this, "验证token失败 : " + s, Toast.LENGTH_SHORT).show();
-                    }
-
-                });
-
-    }
 
     public static LocationInfo getLocationInfo() {
         //Scan agian
