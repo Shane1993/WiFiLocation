@@ -17,6 +17,8 @@ public class Config {
     public static final String KEY_REQUEST_BODY_INFORMATION = "information";
     public static final String KEY_REQUEST_BODY_USERNAME = "userName";
     public static final String KEY_REQUEST_BODY_PASSWORD = "password";
+    public static final String KEY_REQUEST_BODY_CONNECTPASSWORD = "connectPassword";
+
 
     public static final String KEY_AREA_NAME = "areaName";
     public static final String KEY_TOKEN = "token";
@@ -31,12 +33,16 @@ public class Config {
     public static final String ACTION_GET_LOCATION = "getMyLocation";
     public static final String ACTION_LOGIN = "login";
     public static final String ACTION_VERIFY_TOKEN = "verifyToken";
+    public static final String ACTION_GET_DEVICE_NAME = "getDeviceName";
+    public static final String ACTION_VERIFY_CONNECTPASSWORD = "verifyConnectPassword";
+    public static final String ACTION_GET_DEVICE_LOCATION = "getDeviceLocation";
 
     public static final int RESULT_STATUS_FAIL = 0;
     public static final int RESULT_STATUS_SUCCESS = 1;
     public static final int RESULT_INVALID_TOKEN = 2;
     public static final int VALUE_GET_AREA_NAME = 0;
     public static final int VALUE_GET_DEVICES_NAME = 0;
+
     public static String valueManageSelectedAreaName = null;
     public static String valueSelectedAreaName = null;
     public static String valueAllAreaName = null;

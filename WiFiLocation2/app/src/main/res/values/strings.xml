@@ -8,4 +8,12 @@
     <string name ="login">登录</string>
     <string name ="user_name">username</string>
     <string name ="password">password</string>
+    <string name="setting">设置</string>
+    <string name="exit">退出</string>
+    <string name="search_device">search device</string>
+    <string name="search">search</string>
+    <string name="search_title">搜索设备</string>
+    <string name="my_devices">我的设备</string>
+    <string name="fail_to_get_information">获取信息失败</string>
+    <string name="out_of_date_token">验证过期，请重新登录</string>
 </resources>

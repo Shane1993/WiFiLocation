@@ -115,7 +115,7 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
             final EditText alertEt = (EditText) view.findViewById(R.id.alertEt);
             //Create a AlertDialog
             final AlertDialog ad = new AlertDialog.Builder(getContext()).create();
-            ad.setCanceledOnTouchOutside(false);
+//            ad.setCanceledOnTouchOutside(false);
             ad.setTitle("添加新区域");
             ad.setView(view);
             ad.setButton(DialogInterface.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {

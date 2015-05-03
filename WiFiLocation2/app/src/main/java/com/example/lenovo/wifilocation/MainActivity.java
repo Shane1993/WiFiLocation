@@ -1,16 +1,31 @@
 package com.example.lenovo.wifilocation;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.view.ActionMode;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.TabHost;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import net.lee.wifilocation.config.Config;
 import net.lee.wifilocation.model.LocationInfo;
+import net.lee.wifilocation.net.Login;
 import net.lee.wifilocation.net.VerifyToken;
 
 import org.json.JSONException;
@@ -22,7 +37,10 @@ import cn.bmob.v3.AsyncCustomEndpoints;
 import cn.bmob.v3.listener.CloudCodeListener;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements View.OnClickListener{
+
+    private TextView userNameTV;
+    private ImageButton setttingImageBtn,searchImgageBtn;
 
     //create the TabHost
     private TabHost tabHost;
@@ -33,14 +51,25 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Set action bar
         setContentView(R.layout.activity_main);
+
 
         Intent intent = getIntent();
         final String token = intent.getStringExtra(Config.KEY_TOKEN);
         String userName = intent.getStringExtra(Config.KEY_REQUEST_BODY_USERNAME);
         System.out.println("========>token : " + token);
         System.out.println("========>userName : " + userName);
+        userNameTV = (TextView) findViewById(R.id.userNameTV);
+        setttingImageBtn = (ImageButton) findViewById(R.id.settingImageBtn);
+        searchImgageBtn = (ImageButton) findViewById(R.id.searchImageBtn);
 
+        userNameTV.setText(userName);
+        setttingImageBtn.setOnClickListener(this);
+        searchImgageBtn.setOnClickListener(this);
+
+
+        //Verify whether the token is out to date
         new VerifyToken(MainActivity.this, token, new VerifyToken.SuccessCallback() {
             @Override
             public void onSuccess() {
@@ -52,7 +81,7 @@ public class MainActivity extends Activity {
             public void onFail(String failResult) {
                 System.out.println("==========>This is verifyToken fail, token : " + token);
 
-                Toast.makeText(MainActivity.this,failResult,Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, failResult, Toast.LENGTH_SHORT).show();
 
                 Intent intent = new Intent(MainActivity.this, LoginAty.class);
                 startActivity(intent);
@@ -64,18 +93,120 @@ public class MainActivity extends Activity {
         //Bind the service
         wifiManager = (WifiManager) getSystemService(Service.WIFI_SERVICE);
 
-        //Set the TabHost
-        tabHost = (TabHost) findViewById(R.id.tabHost);
+        setTabHost();
 
-        tabHost.setup();
-
-        tabHost.addTab(tabHost.newTabSpec("start").setIndicator("定位").setContent(R.id.firstLayoutId));
-        tabHost.addTab(tabHost.newTabSpec("area").setIndicator("管理").setContent(R.id.secondLayoutId));
-        tabHost.addTab(tabHost.newTabSpec("person").setIndicator("搜寻设备").setContent(R.id.thirdLayoutId));
 
     }
 
 
+
+    @Override
+    public void onClick(View v) {
+
+        if(v.getId() == R.id.searchImageBtn)
+        {
+            Intent searchIntent = new Intent(MainActivity.this,SearchAty.class);
+            startActivity(searchIntent);
+        }
+        else if(v.getId() == R.id.settingImageBtn)
+        {
+            PopupMenu popupMenu = new PopupMenu(MainActivity.this,searchImgageBtn);
+            popupMenu.getMenuInflater().inflate(R.menu.popup_menu,popupMenu.getMenu());
+
+            //set clickListener
+            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+
+                    Intent menuIntent;
+
+                    switch (item.getItemId()) {
+                        case R.id.settingPopupMenu:
+
+                            menuIntent = new Intent(MainActivity.this, SettingAty.class);
+                            startActivity(menuIntent);
+
+
+                            break;
+                        case R.id.exitPopupMenu:
+
+                            //Clear the data when exit
+                            Config.cacheToken(MainActivity.this,null);
+
+                            menuIntent = new Intent(MainActivity.this, LoginAty.class);
+                            startActivity(menuIntent);
+
+                            finish();
+                            break;
+                    }
+
+                    return true;
+                }
+            });
+            //Do not remember to show
+            popupMenu.show();
+        }
+    }
+
+    /**
+     * This function is used to set the tabhost
+     */
+    private void setTabHost() {
+        //Set the TabHost
+        tabHost = (TabHost) findViewById(R.id.tabHost);
+        //Don't remember to set up
+        tabHost.setup();
+
+        TabHost.TabSpec firstTabSpec = tabHost.newTabSpec("tid1");
+        TabHost.TabSpec secondTabSpec = tabHost.newTabSpec("tid2");
+        TabHost.TabSpec thirdTabSpec = tabHost.newTabSpec("tid3");
+
+        firstTabSpec.setIndicator("定位");
+        secondTabSpec.setIndicator("管理");
+        thirdTabSpec.setIndicator("搜寻设备");
+
+        firstTabSpec.setContent(R.id.firstLayoutId);
+        secondTabSpec.setContent(R.id.secondLayoutId);
+        thirdTabSpec.setContent(R.id.thirdLayoutId);
+
+        tabHost.addTab(firstTabSpec);
+        tabHost.addTab(secondTabSpec);
+        tabHost.addTab(thirdTabSpec);
+
+        /**
+         * The method of setting the font size and color in tab
+         */
+        for (int i = 0; i < tabHost.getTabWidget().getChildCount(); i++) {
+            TextView tv = (TextView) tabHost.getTabWidget().getChildAt(i).findViewById(android.R.id.title); //Unselected Tabs
+            tv.setTextColor(Color.parseColor("#ffffff"));
+            tv.setTextSize(20);
+        }
+
+        tabHost.getTabWidget().setCurrentTab(0);
+        TextView tv = (TextView) tabHost.getCurrentTabView().findViewById(android.R.id.title); //for Selected Tab
+        tv.setTextColor(Color.parseColor("#000000"));
+
+        tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+            @Override
+            public void onTabChanged(String tabId) {
+
+                for (int i = 0; i < tabHost.getTabWidget().getChildCount(); i++) {
+                    TextView tv = (TextView) tabHost.getTabWidget().getChildAt(i).findViewById(android.R.id.title); //Unselected Tabs
+                    tv.setTextColor(Color.parseColor("#ffffff"));
+                    tv.setTextSize(20);
+                }
+
+                TextView tv = (TextView) tabHost.getCurrentTabView().findViewById(android.R.id.title); //for Selected Tab
+                tv.setTextColor(Color.parseColor("#000000"));
+            }
+        });
+    }
+
+    /**
+     * Get the location information through the wifimanager
+     *
+     * @return
+     */
     public static LocationInfo getLocationInfo() {
         //Scan agian
         wifiManager.startScan();
@@ -158,4 +289,28 @@ public class MainActivity extends Activity {
         }
     }
 
+
+
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//
+//        MenuInflater menuInflater = getMenuInflater();
+//        menuInflater.inflate(R.menu.menu_main, menu);
+//
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId())
+//        {
+//            case R.id.action_overflow:
+//
+//                return true;
+//            default:
+//
+//                return super.onOptionsItemSelected(item);
+//
+//        }
+//    }
 }

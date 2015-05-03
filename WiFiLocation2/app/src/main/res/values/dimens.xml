@@ -3,4 +3,9 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name ="activity_horizontal_margin">16dp</dimen>
     <dimen name ="activity_vertical_margin">16dp</dimen>
+    <dimen name="menu_vertical">56dp</dimen>
+    <dimen name="tabwidgetVertical">72dp</dimen>
+    <dimen name="username">30sp</dimen>
+    <dimen name="iconSize">48dp</dimen>
+    <dimen name="listviewmarginleft">72dp</dimen>
 </resources>

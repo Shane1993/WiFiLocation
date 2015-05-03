@@ -12,10 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:orientation="vertical"
-        >
-
-
+        android:orientation="vertical">
 
 
         <LinearLayout
@@ -41,8 +38,6 @@
     </LinearLayout>
 
 
-
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -58,8 +53,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="位置信息："
-                android:textAppearance="@android:style/TextAppearance.Large"
-                />
+                android:textAppearance="@android:style/TextAppearance.Large" />
 
 
             <ScrollView
@@ -100,8 +94,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
@@ -110,8 +103,7 @@
                     android:id="@+id/scanAPTv"
                     android:gravity="center"
                     android:text="扫描："
-                    android:textSize="20sp"
-                    />
+                    android:textSize="20sp" />
 
                 <ImageButton
                     android:id="@+id/scanAPBtn"
@@ -119,8 +111,7 @@
                     android:layout_height="wrap_content"
                     android:src="@android:drawable/btn_plus"
                     android:paddingBottom="10dp"
-                    android:background="#ffffffff"
-                     />
+                    android:background="#ffffffff" />
 
             </LinearLayout>
 
@@ -138,6 +129,7 @@
                 android:gravity="center"
                 android:src="@android:drawable/stat_sys_upload_done"
                 android:background="#ffb8a7ff"
+
                 android:scaleType="fitCenter" />
 
             <ImageButton
@@ -146,7 +138,6 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textAppearance="@android:style/TextAppearance.Medium"
                 android:src="@drawable/abc_ic_clear_mtrl_alpha"
                 android:background="#ffb2ffa2"
                 android:scaleType="fitCenter" />

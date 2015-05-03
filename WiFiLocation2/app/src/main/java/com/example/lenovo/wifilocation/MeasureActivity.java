@@ -95,7 +95,7 @@ public class MeasureActivity extends Activity implements View.OnClickListener{
 
         } else if (v.getId() == R.id.getJSBtn) {
 
-            if(TextUtils.isEmpty(measureInfoTv.toString()) || !compareResult)
+            if(locationInfoFinal == null || !compareResult)
             {
                 toast("请定位成功后再上传");
             }

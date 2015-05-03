@@ -15,6 +15,80 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#ff356bff">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/menu_vertical">
+
+                    <TextView
+                        android:id="@+id/userNameTV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/username"
+                        android:layout_marginLeft="72dp"
+                        android:textColor="#ffffffff"
+                        android:layout_marginTop="@dimen/activity_horizontal_margin" />
+
+                    <LinearLayout
+                        android:id="@+id/settingImageBtnLL"
+                        android:layout_width="@dimen/iconSize"
+                        android:layout_height="@dimen/iconSize"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginTop="@dimen/activity_horizontal_margin"
+                        android:orientation="horizontal">
+
+
+                        <ImageButton
+                            android:id="@+id/settingImageBtn"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/abc_ic_menu_moreoverflow_mtrl_alpha"
+                            android:background="?android:selectableItemBackground" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_toLeftOf="@id/settingImageBtnLL"
+                        android:layout_width="@dimen/iconSize"
+                        android:layout_height="@dimen/iconSize"
+                        android:layout_marginTop="@dimen/activity_horizontal_margin"
+                        android:orientation="horizontal">
+
+
+                        <ImageButton
+                            android:id="@+id/searchImageBtn"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/abc_ic_search_api_mtrl_alpha"
+                            android:background="?android:selectableItemBackground" />
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/tabwidgetVertical">
+
+                    <TabWidget
+                        android:id="@android:id/tabs"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        >
+
+                    </TabWidget>
+
+                </RelativeLayout>
+
+
+
+            </LinearLayout>
+
+
             <FrameLayout
                 android:id="@android:id/tabcontent"
                 android:layout_width="match_parent"
@@ -22,84 +96,65 @@
                 android:layout_weight="1"
                 android:layout_marginBottom="5dp">
 
+
                 <com.example.lenovo.wifilocation.FirstLayout
                     android:id="@+id/firstLayoutId"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:paddingRight="@dimen/activity_horizontal_margin"
+                    android:paddingTop="@dimen/activity_vertical_margin"
+                    android:paddingBottom="@dimen/activity_vertical_margin">
+
+
+                    <TextView
+                        android:id="@+id/myLocationTv"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:hint="开始定位自己的位置..."
+                        android:textSize="25sp" />
+
+
+                    <ImageButton
+                        android:id="@+id/startMyBtn"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/gps"
+                        android:scaleType="fitCenter"
+                        android:layout_gravity="center"
+                        android:background="?android:selectableItemBackground" />
 
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="3"
-                        android:orientation="vertical"
-                        android:background="#ff356bff">
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingLeft="10dp"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp">
 
                         <TextView
-                            android:id="@+id/myLocationInformationTv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:text="选择所处区域："
+                            android:textSize="25sp"
+                            android:gravity="center"
+                            android:textColor="#e7666665" />
+
+                        <Spinner
+                            android:id="@+id/areaSelectSp"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:textSize="20sp" />
-
-                    </LinearLayout>
-
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="4"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/myLocationTv"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:hint="开始定位自己的位置..."
-                            android:textSize="25sp" />
-
-
-                        <ImageButton
-                            android:id="@+id/startMyBtn"
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:src="@drawable/gps"
-                            android:scaleType="centerCrop"
-                            android:layout_gravity="center" />
-
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
+                            android:paddingRight="10dp"
+                            android:layout_gravity="center"
                             android:paddingLeft="10dp"
-                            android:paddingTop="5dp"
-                            android:paddingBottom="5dp">
+                            android:background="#b0c6c6c6"
+                            android:layout_margin="5dp">
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
-                                android:text="选择所处区域："
-                                android:textSize="25sp"
-                                android:gravity="center"
-                                android:textColor="#e7666665" />
-
-                            <Spinner
-                                android:id="@+id/areaSelectSp"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:paddingRight="10dp"
-                                android:layout_gravity="center"
-                                android:paddingLeft="10dp"
-                                android:background="#b0c6c6c6"
-                                android:layout_margin="5dp">
-
-                            </Spinner>
-
-                        </LinearLayout>
+                        </Spinner>
 
                     </LinearLayout>
 
@@ -110,91 +165,73 @@
                     android:id="@+id/secondLayoutId"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="3"
-                        android:orientation="vertical"
-                        android:background="#ff356bff">
-
-                    </LinearLayout>
+                    android:orientation="vertical"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:paddingRight="@dimen/activity_horizontal_margin"
+                    android:paddingTop="@dimen/activity_vertical_margin"
+                    android:paddingBottom="@dimen/activity_vertical_margin">
 
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="4"
-                        android:orientation="vertical"
-                        android:paddingLeft="@dimen/activity_horizontal_margin"
-                        android:paddingRight="@dimen/activity_horizontal_margin"
-                        android:paddingTop="@dimen/activity_vertical_margin"
-                        android:paddingBottom="@dimen/activity_vertical_margin">
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                            android:text="区域"
+                            android:textSize="35sp"
+                            android:textColor="#ff63ffa6"
+                            android:paddingLeft="20dp"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp" />
 
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_weight="1"
-                                android:layout_height="wrap_content"
-                                android:text="区域"
-                                android:textSize="35sp"
-                                android:textColor="#ff63ffa6"
-                                android:paddingLeft="20dp"
-                                android:paddingTop="5dp"
-                                android:paddingBottom="5dp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="选择"
-                                android:textSize="35sp"
-                                android:textColor="#ff63ffa6"
-                                android:paddingRight="20dp" />
-
-                        </LinearLayout>
-
-                        <ListView
-                            android:id="@+id/locationLV"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight="1">
-
-                        </ListView>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:paddingBottom="5dp"
-                            android:paddingTop="10dp">
-
-                            <Button
-                                android:id="@+id/createLocationBtn"
-                                android:layout_width="0dp"
-                                android:layout_weight="1"
-                                android:layout_height="wrap_content"
-                                android:alpha="0.8"
-                                android:textAppearance="@android:style/TextAppearance.Large"
-                                android:text="创建" />
-
-                            <Button
-                                android:id="@+id/measureBtn"
-                                android:layout_width="0dp"
-                                android:layout_weight="1"
-                                android:layout_height="wrap_content"
-                                android:alpha="0.8"
-                                android:textAppearance="@android:style/TextAppearance.Large"
-                                android:text="采集" />
-
-                        </LinearLayout>
+                            android:text="选择"
+                            android:textSize="35sp"
+                            android:textColor="#ff63ffa6"
+                            android:paddingRight="20dp" />
 
                     </LinearLayout>
 
+                    <ListView
+                        android:id="@+id/locationLV"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1">
+
+                    </ListView>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="10dp">
+
+                        <Button
+                            android:id="@+id/createLocationBtn"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:alpha="0.8"
+                            android:textAppearance="@android:style/TextAppearance.Large"
+                            android:text="创建" />
+
+                        <Button
+                            android:id="@+id/measureBtn"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:alpha="0.8"
+                            android:textAppearance="@android:style/TextAppearance.Large"
+                            android:text="采集" />
+
+                    </LinearLayout>
 
                 </com.example.lenovo.wifilocation.SecondLayout>
 
@@ -202,66 +239,48 @@
                     android:id="@+id/thirdLayoutId"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:paddingRight="@dimen/activity_horizontal_margin"
+                    android:paddingTop="@dimen/activity_vertical_margin"
+                    android:paddingBottom="@dimen/activity_vertical_margin">
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="最近的位置和时间:"
+                        android:textSize="25sp" />
+
+                    <ListView
+                        android:id="@+id/deviceLocationLV"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1">
+
+                    </ListView>
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="3"
-                        android:orientation="vertical"
-                        android:background="#ff356bff">
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
 
-                    </LinearLayout>
+                        <Spinner
+                            android:id="@+id/devicesSelectSp"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:background="#b0c6c6c6"
+                            android:layout_marginLeft="30dp"
+                            android:layout_marginRight="20dp" />
 
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="4"
-                        android:orientation="vertical"
-                        android:paddingLeft="@dimen/activity_horizontal_margin"
-                        android:paddingRight="@dimen/activity_horizontal_margin"
-                        android:paddingTop="@dimen/activity_vertical_margin"
-                        android:paddingBottom="@dimen/activity_vertical_margin">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="最近的位置和时间:"
-                            android:textSize="25sp" />
-
-                        <ListView
-                            android:id="@+id/deviceLocationLV"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight="1">
-
-                        </ListView>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <Spinner
-                                android:id="@+id/devicesSelectSp"
-                                android:layout_width="0dp"
-                                android:layout_weight="1"
-                                android:layout_height="match_parent"
-                                android:layout_gravity="center"
-                                android:background="#b0c6c6c6"
-                                android:layout_marginLeft="30dp"
-                                android:layout_marginRight="20dp" />
-
-                            <ImageButton
-                                android:id="@+id/scanDeviceBtn"
-                                android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
-                                android:src="@drawable/abc_ic_search_api_mtrl_alpha"
-                                android:scaleType="centerCrop" />
-
-                        </LinearLayout>
-
+                        <ImageButton
+                            android:id="@+id/scanDeviceBtn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/abc_ic_search_api_mtrl_alpha"
+                            android:scaleType="centerCrop" />
 
                     </LinearLayout>
 
@@ -269,15 +288,6 @@
                 </com.example.lenovo.wifilocation.ThirdLayout>
 
             </FrameLayout>
-
-            <TabWidget
-                android:id="@android:id/tabs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:alpha="0.8"
-                android:background="#ffc1fff1">
-
-            </TabWidget>
 
 
         </LinearLayout>

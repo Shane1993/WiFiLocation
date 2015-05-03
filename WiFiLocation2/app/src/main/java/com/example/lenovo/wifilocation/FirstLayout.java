@@ -36,9 +36,9 @@ public class FirstLayout extends LinearLayout implements View.OnClickListener, A
     }
 
     private ImageButton startBtn;
-    private TextView myLocationTv,myLocationInformationTv;
+    private TextView myLocationTv;
     private LocationInfo locationInfo;
-    private DeviceLocation deviceLocation = new DeviceLocation();
+    private DeviceLocation deviceLocation;
 
     private Spinner spinner;
     private List<String> areaNameList;
@@ -50,7 +50,6 @@ public class FirstLayout extends LinearLayout implements View.OnClickListener, A
 
         startBtn = (ImageButton) findViewById(R.id.startMyBtn);
         myLocationTv = (TextView) findViewById(R.id.myLocationTv);
-        myLocationInformationTv = (TextView) findViewById(R.id.myLocationInformationTv);
         spinner = (Spinner) findViewById(R.id.areaSelectSp);
 
         startBtn.setOnClickListener(this);
@@ -154,11 +153,11 @@ public class FirstLayout extends LinearLayout implements View.OnClickListener, A
         locationInfo = MainActivity.getLocationInfo();
         if (locationInfo != null) {
             locationInfo.setAreaName(Config.valueSelectedAreaName);
-            myLocationInformationTv.setText("AreaName : " + locationInfo.getAreaName()
-                    + "\nMac1 : " + locationInfo.getMac1() + ", RSSI:" + locationInfo.getMac1Rssi()
-                    + "\nMac2 : " + locationInfo.getMac2() + ", RSSI:" + locationInfo.getMac2Rssi()
-                    + "\nMac3 : " + locationInfo.getMac3() + ", RSSI:" + locationInfo.getMac3Rssi()
-                    + "\nMacSort : " + locationInfo.getMacSort());
+//            myLocationInformationTv.setText("AreaName : " + locationInfo.getAreaName()
+//                    + "\nMac1 : " + locationInfo.getMac1() + ", RSSI:" + locationInfo.getMac1Rssi()
+//                    + "\nMac2 : " + locationInfo.getMac2() + ", RSSI:" + locationInfo.getMac2Rssi()
+//                    + "\nMac3 : " + locationInfo.getMac3() + ", RSSI:" + locationInfo.getMac3Rssi()
+//                    + "\nMacSort : " + locationInfo.getMacSort());
             //Send the data to server for getting the locaiton from server
 //            onRequestCloud(Config.ACTION_GET_LOCATION);
             new GetLocation(getContext(), locationInfo.toJSONString(), new GetLocation.SuccessCallback() {
@@ -170,7 +169,9 @@ public class FirstLayout extends LinearLayout implements View.OnClickListener, A
                     {
                         case Config.RESULT_STATUS_SUCCESS:
 
+                            deviceLocation = new DeviceLocation();
                             deviceLocation.setUserName(Config.getCacheUserName(getContext()));
+                            deviceLocation.setAreaName(locationInfo.getAreaName());
                             deviceLocation.setLocationName(locationName);
                             deviceLocation.save(getContext());
                             break;
