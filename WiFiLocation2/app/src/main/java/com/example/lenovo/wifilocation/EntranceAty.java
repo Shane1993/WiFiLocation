@@ -21,6 +21,8 @@ public class EntranceAty extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        System.out.println("");
+
         //This is about Bmob
         Bmob.initialize(this, Bmob_AppId);
 
