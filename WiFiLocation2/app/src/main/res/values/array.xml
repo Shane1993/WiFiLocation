@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <array name="settingArray">
+
+        <item>登录密码</item>
+        <item>连接密码</item>
+
+    </array>
+    
+</resources>

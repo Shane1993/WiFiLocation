@@ -24,8 +24,7 @@
             android:label="@string/app_name"
             android:theme="@style/App_Theme"></activity>
 
-        <activity
-            android:name=".MeasureActivity"></activity>
+        <activity android:name=".MeasureActivity"></activity>
         <activity android:name=".LoginAty"></activity>
 
         <activity android:name=".EntranceAty">
@@ -35,15 +34,32 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SettingAty"
-            android:label="@string/setting"
-            android:theme="@style/My_Theme"
-            ></activity>
 
-        <activity android:name=".SearchAty"
+        <activity
+            android:name=".SearchAty"
             android:theme="@style/My_Theme"
-            android:label="@string/search_title"
+            android:label="@string/search_title" />
+
+        <activity
+            android:name=".SettingAty"
+            android:label="@string/setting"
+            android:theme="@style/My_Theme"></activity>
+
+        <activity
+            android:name=".LoginPasswordAty"
+            android:theme="@style/My_Theme"
+            android:label="设定登录密码"
             />
+        <activity
+            android:name=".ConnectPasswordAty"
+            android:theme="@style/My_Theme"
+            android:label="设定连接密码"
+            />
+        <activity android:name=".MyDevicesAty"
+            android:theme="@style/My_Theme"
+            android:label="我的设备"
+            />
+
     </application>
 
 </manifest>

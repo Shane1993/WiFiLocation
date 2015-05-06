@@ -80,11 +80,8 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
     private void refreshListView()
     {
         String str = Config.valueAllAreaName;
-        System.out.println("SecondLayout : " + str);
         if(str != null)
         {
-            Log.i("StringData",str);
-
             String[] areaNameArray = str.split(",");
             for(String s : areaNameArray)
             {
@@ -132,7 +129,6 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
                             @Override
                             public void onSuccess() {
 
-                                Log.i("Bmob", "This is onSuccess");
                                 locationList.add(name);
                                 //Tell the FirstLayout's spinner that area have change
                                 Config.valueAreaChanged = true;
@@ -141,7 +137,6 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
 
                             @Override
                             public void onFailure(int i, String s) {
-                                Log.i("Bmob", "This is onFailure : " + s);
 
                                 Toast.makeText(getContext(), "¥¥Ω®«¯”Ú ß∞‹£∫" + s, Toast.LENGTH_SHORT).show();
                             }

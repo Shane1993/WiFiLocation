@@ -16,4 +16,7 @@
     <string name="my_devices">我的设备</string>
     <string name="fail_to_get_information">获取信息失败</string>
     <string name="out_of_date_token">验证过期，请重新登录</string>
+    <string name="fail_to_reset_password">修改密码失败</string>
+    <string name="success_to_reset_password">重置密码成功</string>
+    <string name="done_button">done</string>
 </resources>

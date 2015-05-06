@@ -17,7 +17,7 @@ import net.lee.wifilocation.config.Config;
 import net.lee.wifilocation.model.DeviceLocation;
 import net.lee.wifilocation.model.LocationInfo;
 import net.lee.wifilocation.net.GetAreaName;
-import net.lee.wifilocation.net.GetLocation;
+import net.lee.wifilocation.net.GetMyLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,7 +87,6 @@ public class FirstLayout extends LinearLayout implements View.OnClickListener, A
         //Add data to the spinner
         if(str != null)
         {
-            Log.i("String Data : AreaName",str);
             String[] areaNameArray = str.split(",");
             for(String s : areaNameArray)
             {
@@ -153,14 +152,7 @@ public class FirstLayout extends LinearLayout implements View.OnClickListener, A
         locationInfo = MainActivity.getLocationInfo();
         if (locationInfo != null) {
             locationInfo.setAreaName(Config.valueSelectedAreaName);
-//            myLocationInformationTv.setText("AreaName : " + locationInfo.getAreaName()
-//                    + "\nMac1 : " + locationInfo.getMac1() + ", RSSI:" + locationInfo.getMac1Rssi()
-//                    + "\nMac2 : " + locationInfo.getMac2() + ", RSSI:" + locationInfo.getMac2Rssi()
-//                    + "\nMac3 : " + locationInfo.getMac3() + ", RSSI:" + locationInfo.getMac3Rssi()
-//                    + "\nMacSort : " + locationInfo.getMacSort());
-            //Send the data to server for getting the locaiton from server
-//            onRequestCloud(Config.ACTION_GET_LOCATION);
-            new GetLocation(getContext(), locationInfo.toJSONString(), new GetLocation.SuccessCallback() {
+            new GetMyLocation(getContext(), locationInfo.toJSONString(), new GetMyLocation.SuccessCallback() {
                 @Override
                 public void onSuccess(int locationStatus, String locationName) {
                     myLocationTv.setText(locationName);
@@ -180,7 +172,7 @@ public class FirstLayout extends LinearLayout implements View.OnClickListener, A
                             break;
                     }
                 }
-            }, new GetLocation.FailCallback() {
+            }, new GetMyLocation.FailCallback() {
                 @Override
                 public void onFail(String failResult) {
                     Toast.makeText(getContext(),failResult,Toast.LENGTH_SHORT).show();

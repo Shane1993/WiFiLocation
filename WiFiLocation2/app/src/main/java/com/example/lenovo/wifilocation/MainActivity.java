@@ -58,8 +58,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
         Intent intent = getIntent();
         final String token = intent.getStringExtra(Config.KEY_TOKEN);
         String userName = intent.getStringExtra(Config.KEY_REQUEST_BODY_USERNAME);
-        System.out.println("========>token : " + token);
-        System.out.println("========>userName : " + userName);
         userNameTV = (TextView) findViewById(R.id.userNameTV);
         setttingImageBtn = (ImageButton) findViewById(R.id.settingImageBtn);
         searchImgageBtn = (ImageButton) findViewById(R.id.searchImageBtn);
@@ -74,12 +72,10 @@ public class MainActivity extends Activity implements View.OnClickListener{
             @Override
             public void onSuccess() {
 
-                System.out.println("==========>This is verifyToken success, token + " + token);
             }
         }, new VerifyToken.FailCallback() {
             @Override
             public void onFail(String failResult) {
-                System.out.println("==========>This is verifyToken fail, token : " + token);
 
                 Toast.makeText(MainActivity.this, failResult, Toast.LENGTH_SHORT).show();
 
@@ -121,25 +117,26 @@ public class MainActivity extends Activity implements View.OnClickListener{
                     Intent menuIntent;
 
                     switch (item.getItemId()) {
+                        case R.id.myDevicePopupMenu:
+                            menuIntent = new Intent(MainActivity.this,MyDevicesAty.class);
+                            startActivity(menuIntent);
+                            break;
                         case R.id.settingPopupMenu:
-
                             menuIntent = new Intent(MainActivity.this, SettingAty.class);
                             startActivity(menuIntent);
-
-
                             break;
                         case R.id.exitPopupMenu:
-
                             //Clear the data when exit
-                            Config.cacheToken(MainActivity.this,null);
+                            Config.cacheToken(MainActivity.this, null);
+                            Config.cacheConnectPassword(MainActivity.this, null);
+                            Config.cacheAllDeivecsName(MainActivity.this,null);
+                            Config.valueMyDevicesChange = true;
 
                             menuIntent = new Intent(MainActivity.this, LoginAty.class);
                             startActivity(menuIntent);
-
                             finish();
                             break;
                     }
-
                     return true;
                 }
             });
@@ -184,7 +181,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
         tabHost.getTabWidget().setCurrentTab(0);
         TextView tv = (TextView) tabHost.getCurrentTabView().findViewById(android.R.id.title); //for Selected Tab
-        tv.setTextColor(Color.parseColor("#000000"));
+        tv.setTextColor(Color.parseColor("#ff97c6ff"));
 
         tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             @Override
@@ -197,7 +194,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 }
 
                 TextView tv = (TextView) tabHost.getCurrentTabView().findViewById(android.R.id.title); //for Selected Tab
-                tv.setTextColor(Color.parseColor("#000000"));
+                tv.setTextColor(Color.parseColor("#ff97c6ff"));
             }
         });
     }
@@ -288,29 +285,4 @@ public class MainActivity extends Activity implements View.OnClickListener{
             return null;
         }
     }
-
-
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//
-//        MenuInflater menuInflater = getMenuInflater();
-//        menuInflater.inflate(R.menu.menu_main, menu);
-//
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId())
-//        {
-//            case R.id.action_overflow:
-//
-//                return true;
-//            default:
-//
-//                return super.onOptionsItemSelected(item);
-//
-//        }
-//    }
 }

@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/myDevicePopupMenu"
+        android:title="@string/my_devices"
+        />
+    <item
+        android:id="@+id/settingPopupMenu"
+        android:title="@string/setting"
+        />
+
+    <item
+        android:id="@+id/exitPopupMenu"
+        android:title="@string/exit"
+        />
+</menu>
