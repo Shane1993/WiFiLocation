@@ -24,6 +24,7 @@ public class EntranceAty extends Activity {
         //This is about Bmob
         Bmob.initialize(this, Bmob_AppId);
 
+        //
         String userName = Config.getCacheUserName(EntranceAty.this);
         String token = Config.getCacheToken(EntranceAty.this);
 
