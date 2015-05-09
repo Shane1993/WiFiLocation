@@ -53,7 +53,6 @@ public class SearchAty extends Activity implements SearchView.OnQueryTextListene
 
         new MyActionBarConfig(getActionBar(),null);
 
-
         hintTv = (TextView) findViewById(R.id.searchHintTv);
         searchResultLv = (ListView) findViewById(R.id.searchResultLv);
         searchResultList = new ArrayList<String>();

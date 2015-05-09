@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import net.lee.wifilocation.config.Config;
+import net.lee.wifilocation.config.MyActionBarConfig;
 import net.lee.wifilocation.model.LocationInfo;
 
 import cn.bmob.v3.listener.SaveListener;
@@ -47,6 +49,8 @@ public class MeasureActivity extends Activity implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.measureactivity);
 
+        new MyActionBarConfig(getActionBar(),null);
+
         scanAPBtn = (ImageButton) findViewById(R.id.scanAPBtn);
         locationTv = (TextView) findViewById(R.id.apTv);
         scanAPTv = (TextView) findViewById(R.id.scanAPTv);
@@ -66,6 +70,15 @@ public class MeasureActivity extends Activity implements View.OnClickListener{
 
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home)
+        {
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     public void toast(String msg) {
         Toast.makeText(MeasureActivity.this, msg, Toast.LENGTH_SHORT).show();

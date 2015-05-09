@@ -24,7 +24,9 @@
             android:label="@string/app_name"
             android:theme="@style/App_Theme"></activity>
 
-        <activity android:name=".MeasureActivity"></activity>
+        <activity android:name=".MeasureActivity"
+            android:theme="@style/My_Theme"
+            android:label="采集区域信息"/>
         <activity android:name=".LoginAty"></activity>
 
         <activity android:name=".EntranceAty">

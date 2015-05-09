@@ -129,8 +129,9 @@ public class MainActivity extends Activity implements View.OnClickListener{
                             //Clear the data when exit
                             Config.cacheToken(MainActivity.this, null);
                             Config.cacheConnectPassword(MainActivity.this, null);
-                            Config.cacheAllDeivecsName(MainActivity.this,null);
+                            Config.cacheAllDeivecsName(MainActivity.this, null);
                             Config.valueMyDevicesChange = true;
+                            Config.cacheManagePassword(MainActivity.this,null);
 
                             menuIntent = new Intent(MainActivity.this, LoginAty.class);
                             startActivity(menuIntent);

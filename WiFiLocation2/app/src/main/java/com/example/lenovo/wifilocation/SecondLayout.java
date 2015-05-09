@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.text.TextUtils;
+import android.text.method.PasswordTransformationMethod;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -102,61 +103,152 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
             }
             else
             {
-                Intent intent = new Intent(getContext(),MeasureActivity.class);
-                intent.putExtra(Config.KEY_AREA_NAME,Config.valueManageSelectedAreaName);
-                getContext().startActivity(intent);
+                if(Config.getCacheManagePassword(getContext()) == null) {
+
+                    final View view = LayoutInflater.from(getContext()).inflate(R.layout.alerdialog, null);
+                    final EditText passwordEt = (EditText) view.findViewById(R.id.alertEt);
+                    passwordEt.setTransformationMethod(PasswordTransformationMethod.getInstance());
+
+                    //Create a AlertDialog
+                    final AlertDialog ad = new AlertDialog.Builder(getContext()).create();
+//            ad.setCanceledOnTouchOutside(false);
+                    ad.setTitle("请输入密码");
+                    ad.setView(view);
+                    ad.setButton(DialogInterface.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (TextUtils.isEmpty(passwordEt.getText().toString())) {
+                                Toast.makeText(getContext(), "请输入密码", Toast.LENGTH_SHORT).show();
+                            } else {
+                                final String managePassword = passwordEt.getText().toString();
+                                if(managePassword.equals(Config.VALUE_MANAGE_PASSWORD))
+                                {
+                                    Config.cacheManagePassword(getContext(),managePassword);
+                                    Intent intent = new Intent(getContext(), MeasureActivity.class);
+                                    intent.putExtra(Config.KEY_AREA_NAME, Config.valueManageSelectedAreaName);
+                                    getContext().startActivity(intent);
+                                }
+
+                                ad.dismiss();
+
+                            }
+                        }
+                    });
+                    ad.setButton(DialogInterface.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ad.dismiss();
+                        }
+                    });
+                    ad.show();
+
+                }
+                else
+                {
+                    Intent intent = new Intent(getContext(), MeasureActivity.class);
+                    intent.putExtra(Config.KEY_AREA_NAME, Config.valueManageSelectedAreaName);
+                    getContext().startActivity(intent);
+                }
+
             }
         }else if(v.getId() == R.id.createLocationBtn)
         {
-            final View view = LayoutInflater.from(getContext()).inflate(R.layout.alerdialog, null);
-            final EditText alertEt = (EditText) view.findViewById(R.id.alertEt);
-            //Create a AlertDialog
-            final AlertDialog ad = new AlertDialog.Builder(getContext()).create();
+            if(Config.getCacheManagePassword(getContext()) == null) {
+
+                final View view = LayoutInflater.from(getContext()).inflate(R.layout.alerdialog, null);
+                final EditText passwordEt = (EditText) view.findViewById(R.id.alertEt);
+                passwordEt.setTransformationMethod(PasswordTransformationMethod.getInstance());
+
+                //Create a AlertDialog
+                final AlertDialog ad = new AlertDialog.Builder(getContext()).create();
 //            ad.setCanceledOnTouchOutside(false);
-            ad.setTitle("添加新区域");
-            ad.setView(view);
-            ad.setButton(DialogInterface.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if (TextUtils.isEmpty(alertEt.getText().toString())) {
-                        Toast.makeText(getContext(), "请输入区域名称", Toast.LENGTH_SHORT).show();
-                    } else {
-                        final String name = alertEt.getText().toString();
-
-                        //Send the new area name to the server
-                        AreaInfo areaInfo = new AreaInfo(name);
-                        areaInfo.save(getContext(), new SaveListener() {
-                            @Override
-                            public void onSuccess() {
-
-                                locationList.add(name);
-                                //Tell the FirstLayout's spinner that area have change
-                                Config.valueAreaChanged = true;
-                                adapter.notifyDataSetChanged();
+                ad.setTitle("请输入密码");
+                ad.setView(view);
+                ad.setButton(DialogInterface.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (TextUtils.isEmpty(passwordEt.getText().toString())) {
+                            Toast.makeText(getContext(), "请输入密码", Toast.LENGTH_SHORT).show();
+                        } else {
+                            final String managePassword = passwordEt.getText().toString();
+                            if(managePassword.equals(Config.VALUE_MANAGE_PASSWORD))
+                            {
+                                Config.cacheManagePassword(getContext(),managePassword);
+                                ad.dismiss();
+                                showCreateDialog();
+                            }
+                            else
+                            {
+                                ad.dismiss();
                             }
 
-                            @Override
-                            public void onFailure(int i, String s) {
-
-                                Toast.makeText(getContext(), "创建区域失败：" + s, Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
+                        }
+                    }
+                });
+                ad.setButton(DialogInterface.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
                         ad.dismiss();
                     }
-                }
-            });
-            ad.setButton(DialogInterface.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    ad.dismiss();
-                }
-            });
-            ad.show();
+                });
+                ad.show();
 
+            }
+            else
+            {
+                showCreateDialog();
+            }
         }
     }
 
+    private void showCreateDialog()
+    {
+        final View view = LayoutInflater.from(getContext()).inflate(R.layout.alerdialog, null);
+        final EditText alertEt = (EditText) view.findViewById(R.id.alertEt);
+        //Create a AlertDialog
+        final AlertDialog ad = new AlertDialog.Builder(getContext()).create();
+//            ad.setCanceledOnTouchOutside(false);
+        ad.setTitle("添加新区域");
+        ad.setView(view);
+        ad.setButton(DialogInterface.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (TextUtils.isEmpty(alertEt.getText().toString())) {
+                    Toast.makeText(getContext(), "请输入区域名称", Toast.LENGTH_SHORT).show();
+                } else {
+                    final String name = alertEt.getText().toString();
+
+                    //Send the new area name to the server
+                    AreaInfo areaInfo = new AreaInfo(name);
+                    areaInfo.save(getContext(), new SaveListener() {
+                        @Override
+                        public void onSuccess() {
+
+                            locationList.add(name);
+                            //Tell the FirstLayout's spinner that area have change
+                            Config.valueAreaChanged = true;
+                            adapter.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onFailure(int i, String s) {
+
+                            Toast.makeText(getContext(), "创建区域失败：" + s, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                    ad.dismiss();
+                }
+            }
+        });
+        ad.setButton(DialogInterface.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                ad.dismiss();
+            }
+        });
+        ad.show();
+    }
 
     /**
      * This is short click on items

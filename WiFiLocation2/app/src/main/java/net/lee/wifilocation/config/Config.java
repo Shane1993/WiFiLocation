@@ -53,6 +53,9 @@ public class Config {
     public static final String KEY_LOCATION_NAME = "locationName";
     public static final String KEY_TIME = "time";
 
+    public static final String KEY_MANAGE_PASSWORD = "managePassword";
+    public static final String VALUE_MANAGE_PASSWORD = "234567";
+
 
     public static final int RESULT_STATUS_FAIL = 0;
     public static final int RESULT_STATUS_SUCCESS = 1;
@@ -184,6 +187,29 @@ public class Config {
     public static String getCacheAllDeivecsName(Context context)
     {
         return context.getSharedPreferences(APP_ID,Context.MODE_PRIVATE).getString(KEY_ALL_DEVICES_NAME,null);
+    }
+
+    /**
+     * Save the manage password into the database
+     * Column name : KEY_MANAGE_PASSWORD
+     * @param context
+     * @param managePassword
+     */
+    public static void cacheManagePassword(Context context,String managePassword)
+    {
+        SharedPreferences.Editor editor = context.getSharedPreferences(APP_ID,Context.MODE_PRIVATE).edit();
+        editor.putString(KEY_MANAGE_PASSWORD,managePassword);
+        editor.apply();
+    }
+
+    /**
+     * Get the manage password from the database
+     * @param context
+     * @return
+     */
+    public static String getCacheManagePassword(Context context)
+    {
+        return context.getSharedPreferences(APP_ID,Context.MODE_PRIVATE).getString(KEY_MANAGE_PASSWORD,null);
     }
 
 
