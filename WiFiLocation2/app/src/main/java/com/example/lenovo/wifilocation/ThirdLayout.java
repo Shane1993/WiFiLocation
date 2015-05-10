@@ -1,12 +1,14 @@
 package com.example.lenovo.wifilocation;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -42,8 +44,13 @@ public class ThirdLayout extends LinearLayout implements View.OnClickListener, O
     private ArrayList<DeviceLocation> deviceLocationList;
     private DeviceLocationAdapter deviceLocationAdapter;
 
-    private ImageButton searchDeviceIb;
-    private boolean firstClick = true;
+    private Button searchDeviceBtn;
+    private boolean isFirstClick = true;
+    private static boolean hasSelect = false;
+    private static boolean isTracking = false;
+
+    //Use handler to get new data timing
+    private Handler mHandler;
 
     @Override
     protected void onFinishInflate() {
@@ -51,7 +58,7 @@ public class ThirdLayout extends LinearLayout implements View.OnClickListener, O
 
         myDevicesSpinner = (Spinner) findViewById(R.id.devicesSelectSp);
         deviceLocationLV = (ListView) findViewById(R.id.deviceLocationInThirdLV);
-        searchDeviceIb = (ImageButton) findViewById(R.id.searchDeviceLocationIb);
+        searchDeviceBtn = (Button) findViewById(R.id.searchDeviceLocationBtn);
 
         myDeviceList = new ArrayList<String>();
         myDeviceSpinnerAdapter = new ArrayAdapter<String>(getContext(), R.layout.spinner_item, myDeviceList);
@@ -63,7 +70,39 @@ public class ThirdLayout extends LinearLayout implements View.OnClickListener, O
         deviceLocationAdapter = new DeviceLocationAdapter(getContext(), deviceLocationList);
         deviceLocationLV.setAdapter(deviceLocationAdapter);
 
-        searchDeviceIb.setOnClickListener(this);
+        searchDeviceBtn.setOnClickListener(this);
+
+        mHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                new GetDeviceLocation(getContext(), myDevicesSpinner.getSelectedItem().toString(), 1,
+                        new GetDeviceLocation.SuccessCallback() {
+                            @Override
+                            public void onSuccess(boolean haveData, List<DeviceLocation> list) {
+                                if (haveData) {
+                                    deviceLocationList.add(0, list.get(0));
+                                    deviceLocationAdapter.notifyDataSetChanged();
+                                }else
+                                {
+                                    isTracking = false;
+                                    searchDeviceBtn.setText("开始追踪");
+                                    mHandler.removeMessages(0);
+                                }
+                            }
+                        }, new GetDeviceLocation.FailCallback() {
+                    @Override
+                    public void onFail(String failResult) {
+                        Toast.makeText(getContext(), failResult, Toast.LENGTH_SHORT).show();
+
+
+                    }
+                });
+
+                //Every 5 second get a new data
+                mHandler.sendEmptyMessageDelayed(0, 5000);
+            }
+        };
 
     }
 
@@ -72,7 +111,6 @@ public class ThirdLayout extends LinearLayout implements View.OnClickListener, O
         super.onVisibilityChanged(changedView, visibility);
         if (visibility == View.VISIBLE) {
             if (Config.valueMyDevicesChange) {
-
                 //Get deveices name from server
                 new GetMyDiveces(getContext(), Config.getCacheUserName(getContext()), new GetMyDiveces.SuccessCallback() {
                     @Override
@@ -93,7 +131,9 @@ public class ThirdLayout extends LinearLayout implements View.OnClickListener, O
                 Config.valueMyDevicesChange = false;
 
             } else {
-                refreshSpinner();
+                if (!hasSelect) {
+                    refreshSpinner();
+                }
             }
         }
     }
@@ -108,7 +148,6 @@ public class ThirdLayout extends LinearLayout implements View.OnClickListener, O
 
             String myDevices = Config.getCacheAllDeivecsName(getContext());
 
-            myDeviceList.clear();
             if (!myDevices.equals("")) {
                 for (String device : myDevices.split(",")) {
                     myDeviceList.add(device);
@@ -121,62 +160,73 @@ public class ThirdLayout extends LinearLayout implements View.OnClickListener, O
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.searchDeviceLocationIb) {
-            System.out.println(myDevicesSpinner.getSelectedItem().toString());
-            if (firstClick) {
-                new GetDeviceLocation(getContext(), myDevicesSpinner.getSelectedItem().toString(), 10,
-                        new GetDeviceLocation.SuccessCallback() {
-                            @Override
-                            public void onSuccess(boolean haveData, List<DeviceLocation> list) {
-                                if (haveData) {
-                                    for (DeviceLocation dl : list)
-                                    {
-                                        deviceLocationList.add(dl);
-                                        System.out.println(dl.getAreaName() + " "+ dl.getTime());
+        if (v.getId() == R.id.searchDeviceLocationBtn) {
+            if (!myDevicesSpinner.getSelectedItem().toString().equals("无")) {
+                if (!isTracking) {
+                    isTracking = true;
+                    searchDeviceBtn.setText("停止追踪");
+                    if (isFirstClick) {
+                        isFirstClick = false;
+                        new GetDeviceLocation(getContext(), myDevicesSpinner.getSelectedItem().toString(), 10,
+                                new GetDeviceLocation.SuccessCallback() {
+                                    @Override
+                                    public void onSuccess(boolean haveData, List<DeviceLocation> list) {
+                                        if (haveData) {
+                                            for (DeviceLocation dl : list) {
+                                                deviceLocationList.add(dl);
+                                                System.out.println(dl.getAreaName() + " " + dl.getTime());
+                                            }
+                                            deviceLocationAdapter.notifyDataSetChanged();
+
+                                            mHandler.sendEmptyMessageDelayed(0, 5000);
+
+                                        } else {
+                                            DeviceLocation dl = new DeviceLocation();
+                                            dl.setAreaName("");
+                                            dl.setLocationName("该设备暂时没有记录");
+                                            dl.setTime("");
+                                            deviceLocationList.add(dl);
+                                            deviceLocationAdapter.notifyDataSetChanged();
+
+                                            isFirstClick = true;
+                                            isTracking = false;
+                                            searchDeviceBtn.setText("开始追踪");
+                                            mHandler.removeMessages(0);
+                                        }
                                     }
-                                    deviceLocationAdapter.notifyDataSetChanged();
-                                } else {
-                                    DeviceLocation dl = new DeviceLocation();
-                                    dl.setAreaName("");
-                                    dl.setLocationName("该设备暂时没有记录");
-                                    dl.setTime("");
-                                    deviceLocationList.add(dl);
-                                    deviceLocationAdapter.notifyDataSetChanged();
-
-                                }
-                            }
-                        }, new GetDeviceLocation.FailCallback() {
-                    @Override
-                    public void onFail(String failResult) {
-                        Toast.makeText(getContext(), failResult, Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-                firstClick = false;
-            } else {
-                new GetDeviceLocation(getContext(), myDevicesSpinner.getSelectedItem().toString(), 1,
-                        new GetDeviceLocation.SuccessCallback() {
+                                }, new GetDeviceLocation.FailCallback() {
                             @Override
-                            public void onSuccess(boolean haveData, List<DeviceLocation> list) {
-                                if (haveData) {
-
-                                    deviceLocationList.add(0,list.get(0));
-                                    deviceLocationAdapter.notifyDataSetChanged();
-                                }
+                            public void onFail(String failResult) {
+                                Toast.makeText(getContext(), failResult, Toast.LENGTH_SHORT).show();
                             }
-                        }, new GetDeviceLocation.FailCallback() {
-                    @Override
-                    public void onFail(String failResult) {
-                        Toast.makeText(getContext(), failResult, Toast.LENGTH_SHORT).show();
+                        });
+
                     }
-                });
+                    else
+                    {
+                        mHandler.sendEmptyMessageDelayed(0, 5000);
+                    }
+
+                } else {
+                    mHandler.removeMessages(0);
+                    isTracking = false;
+                    searchDeviceBtn.setText("开始追踪");
+                }
+            }
+            else
+            {
+                Toast.makeText(getContext(),"请先选择设备",Toast.LENGTH_SHORT).show();
             }
         }
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        firstClick = true;
+        isFirstClick = true;
+        isTracking = false;
+        hasSelect = true;
+        searchDeviceBtn.setText("开始追踪");
+        mHandler.removeMessages(0);
         deviceLocationList.clear();
         deviceLocationAdapter.notifyDataSetChanged();
     }

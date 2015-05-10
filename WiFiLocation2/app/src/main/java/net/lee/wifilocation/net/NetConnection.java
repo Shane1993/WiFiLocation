@@ -1,5 +1,6 @@
 package net.lee.wifilocation.net;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.widget.Toast;
 
@@ -44,6 +45,7 @@ public class NetConnection {
         }
         // 创建云端代码对象
         AsyncCustomEndpoints cloudCode = new AsyncCustomEndpoints();
+
         // 异步调用云端代码
         cloudCode.callEndpoint(context, cloudCodeName, params,
                 new CloudCodeListener() {

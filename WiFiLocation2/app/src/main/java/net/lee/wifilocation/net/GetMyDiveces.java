@@ -1,5 +1,6 @@
 package net.lee.wifilocation.net;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 
 import com.example.lenovo.wifilocation.R;
@@ -14,6 +15,7 @@ import org.json.JSONObject;
 public class GetMyDiveces {
 
     public GetMyDiveces(final Context context, String userName, final SuccessCallback successCallback, final FailCallback failCallback) {
+
         new NetConnection(context, Config.KEY_CLOUD_CODE_NAME, new NetConnection.SuccessCallback() {
             @Override
             public void onSuccess(String successResult) {

@@ -1,6 +1,7 @@
 package com.example.lenovo.wifilocation;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -106,15 +107,19 @@ public class LoginAty extends Activity implements View.OnClickListener {
             MyUser myUser = new MyUser();
             myUser.setUsername(userName);
             myUser.setPassword(password);
+            final ProgressDialog progressDialog = new ProgressDialog(LoginAty.this);
+            progressDialog.show();
             myUser.signUp(LoginAty.this, new SaveListener() {
                 @Override
                 public void onSuccess() {
+                    progressDialog.dismiss();
                     Toast.makeText(LoginAty.this, "×¢²á³É¹¦", Toast.LENGTH_SHORT).show();
 
                 }
 
                 @Override
                 public void onFailure(int i, String s) {
+                    progressDialog.dismiss();
                     Toast.makeText(LoginAty.this, "×¢²áÊ§°Ü : " + s, Toast.LENGTH_SHORT).show();
                 }
             });

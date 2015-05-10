@@ -94,7 +94,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:layout_marginBottom="5dp">
+                >
 
 
                 <com.example.lenovo.wifilocation.FirstLayout
@@ -102,10 +102,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:paddingLeft="@dimen/activity_horizontal_margin"
-                    android:paddingRight="@dimen/activity_horizontal_margin"
                     android:paddingTop="@dimen/activity_vertical_margin"
-                    android:paddingBottom="@dimen/activity_vertical_margin">
+                    android:background="#ffe1e1e1"
+                    >
 
 
                     <TextView
@@ -115,46 +114,45 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:hint="开始定位自己的位置..."
-                        android:textSize="25sp" />
-
-
-                    <ImageButton
-                        android:id="@+id/startMyBtn"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:src="@drawable/gps"
-                        android:scaleType="fitCenter"
-                        android:layout_gravity="center"
-                        android:background="?android:selectableItemBackground" />
+                        android:textSize="25sp"
+                        android:background="#ffffffff"
+                        />
 
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="48dp"
                         android:orientation="horizontal"
-                        android:paddingLeft="10dp"
-                        android:paddingTop="5dp"
-                        android:paddingBottom="5dp">
+                        android:layout_marginTop="@dimen/activity_vertical_margin"
+                        android:background="#ff356bff"
+                        android:paddingLeft="@dimen/activity_horizontal_margin"
+                        android:paddingRight="@dimen/activity_horizontal_margin"
+                        >
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:text="选择所处区域："
-                            android:textSize="25sp"
-                            android:gravity="center"
-                            android:textColor="#e7666665" />
+                        <!--<Spinner-->
+                            <!--android:id="@+id/areaSelectSp"-->
+                            <!--android:layout_width="0dp"-->
+                            <!--android:layout_weight="1"-->
+                            <!--android:layout_height="match_parent"-->
+                            <!--android:paddingRight="10dp"-->
+                            <!--android:paddingLeft="10dp"-->
+                            <!--android:layout_gravity="center"-->
+                            <!--android:background="@drawable/abc_spinner_mtrl_am_alpha"-->
+                            <!--android:layout_margin="5dp"-->
+                            <!-->-->
+                        <!--</Spinner>-->
 
-                        <Spinner
-                            android:id="@+id/areaSelectSp"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:paddingRight="10dp"
-                            android:layout_gravity="center"
-                            android:paddingLeft="10dp"
-                            android:background="#b0c6c6c6"
-                            android:layout_margin="5dp">
-
-                        </Spinner>
+                        <Button
+                            android:id="@+id/startMyBtn"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:alpha="0.8"
+                            android:textAppearance="@android:style/TextAppearance.Large"
+                            android:text="开始定位"
+                            android:background="?android:selectableItemBackground"
+                            android:textColor="#ffffffff"
+                            />
 
                     </LinearLayout>
 
@@ -166,52 +164,30 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:paddingLeft="@dimen/activity_horizontal_margin"
-                    android:paddingRight="@dimen/activity_horizontal_margin"
-                    android:paddingTop="@dimen/activity_vertical_margin"
-                    android:paddingBottom="@dimen/activity_vertical_margin">
+                    android:background="#ffe1e1e1"
+                    >
 
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="wrap_content"
-                            android:text="区域"
-                            android:textSize="35sp"
-                            android:textColor="#ff63ffa6"
-                            android:paddingLeft="20dp"
-                            android:paddingTop="5dp"
-                            android:paddingBottom="5dp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="选择"
-                            android:textSize="35sp"
-                            android:textColor="#ff63ffa6"
-                            android:paddingRight="20dp" />
-
-                    </LinearLayout>
 
                     <ListView
                         android:id="@+id/locationLV"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="1">
+                        android:layout_weight="1"
+                        android:layout_marginTop="@dimen/activity_vertical_margin"
+                        android:background="#ffffffff"
+                        >
 
                     </ListView>
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="48dp"
                         android:orientation="horizontal"
-                        android:paddingBottom="5dp"
-                        android:paddingTop="10dp">
+                        android:layout_marginTop="@dimen/activity_vertical_margin"
+                        android:background="#ff356bff"
+                        android:paddingLeft="@dimen/activity_horizontal_margin"
+                        android:paddingRight="@dimen/activity_horizontal_margin"
+                        >
 
                         <Button
                             android:id="@+id/createLocationBtn"
@@ -220,7 +196,10 @@
                             android:layout_height="wrap_content"
                             android:alpha="0.8"
                             android:textAppearance="@android:style/TextAppearance.Large"
-                            android:text="创建" />
+                            android:text="创建"
+                            android:background="?android:selectableItemBackground"
+                            android:textColor="#ffffffff"
+                            />
 
                         <Button
                             android:id="@+id/measureBtn"
@@ -229,7 +208,10 @@
                             android:layout_height="wrap_content"
                             android:alpha="0.8"
                             android:textAppearance="@android:style/TextAppearance.Large"
-                            android:text="采集" />
+                            android:text="采集"
+                            android:background="?android:selectableItemBackground"
+                            android:textColor="#ffffffff"
+                            />
 
                     </LinearLayout>
 
@@ -240,10 +222,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:paddingLeft="@dimen/activity_horizontal_margin"
-                    android:paddingRight="@dimen/activity_horizontal_margin"
                     android:paddingTop="@dimen/activity_vertical_margin"
-                    android:paddingBottom="@dimen/activity_vertical_margin">
+                    android:background="#ffe1e1e1"
+                    >
 
                     <TextView
                         android:layout_width="match_parent"
@@ -255,31 +236,49 @@
                         android:id="@+id/deviceLocationInThirdLV"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="1">
+                        android:layout_weight="1"
+                        android:layout_marginTop="@dimen/activity_vertical_margin"
+                        android:background="#ffffffff"
+                        >
 
                     </ListView>
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:layout_height="48dp"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="@dimen/activity_vertical_margin"
+                        android:background="#ff356bff"
+                        android:paddingLeft="@dimen/activity_horizontal_margin"
+                        android:paddingRight="@dimen/activity_horizontal_margin"
+                        >
 
                         <Spinner
                             android:id="@+id/devicesSelectSp"
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="match_parent"
+                            android:paddingRight="10dp"
+                            android:paddingLeft="10dp"
                             android:layout_gravity="center"
-                            android:background="#b0c6c6c6"
-                            android:layout_marginLeft="30dp"
-                            android:layout_marginRight="20dp" />
+                            android:background="@drawable/abc_spinner_mtrl_am_alpha"
+                            android:layout_margin="5dp"
+                            android:layout_marginRight="@dimen/activity_horizontal_margin"
+                            />
 
-                        <ImageButton
-                            android:id="@+id/searchDeviceLocationIb"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:src="@drawable/abc_ic_search_api_mtrl_alpha"
-                            android:scaleType="centerCrop" />
+
+
+                        <Button
+                            android:id="@+id/searchDeviceLocationBtn"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:alpha="0.8"
+                            android:textAppearance="@android:style/TextAppearance.Large"
+                            android:text="开始追踪"
+                            android:background="?android:selectableItemBackground"
+                            android:textColor="#ffffffff"
+                            />
 
                     </LinearLayout>
 

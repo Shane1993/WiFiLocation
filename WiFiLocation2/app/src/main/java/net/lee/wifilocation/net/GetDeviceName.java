@@ -1,5 +1,6 @@
 package net.lee.wifilocation.net;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 
 import com.example.lenovo.wifilocation.R;
@@ -14,10 +15,13 @@ import org.json.JSONObject;
 public class GetDeviceName {
 
     public GetDeviceName(final Context context, String userName, final SuccessCallback successCallback, final FailCallback failCallback) {
+
+        final ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.show();
         new NetConnection(context, Config.KEY_CLOUD_CODE_NAME, new NetConnection.SuccessCallback() {
             @Override
             public void onSuccess(String successResult) {
-
+                progressDialog.dismiss();
                 try {
                     JSONObject jsonObject = new JSONObject(successResult);
                     int status = jsonObject.getInt(Config.KEY_STATUS);
@@ -37,6 +41,7 @@ public class GetDeviceName {
             @Override
             public void onFail(String failResult) {
 
+                progressDialog.dismiss();
                 if (failCallback != null) {
                     failCallback.onFail(context.getResources().getString(R.string.fail_to_get_information) + " : " + failResult);
                 }

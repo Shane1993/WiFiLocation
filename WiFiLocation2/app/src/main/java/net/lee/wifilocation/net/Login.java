@@ -1,5 +1,6 @@
 package net.lee.wifilocation.net;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 
 import net.lee.wifilocation.config.Config;
@@ -21,10 +22,14 @@ public class Login {
 
     public Login(Context context, String userName, String password, final SuccessCallback successCallback, final FailCallback failCallback)
     {
+        final ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.show();
+
         new NetConnection(context, Config.KEY_CLOUD_CODE_NAME, new NetConnection.SuccessCallback() {
             @Override
             public void onSuccess(String successResult) {
 
+                progressDialog.dismiss();
                 try {
                     JSONObject jsonObject = new JSONObject(successResult);
                     int status  = jsonObject.getInt(Config.KEY_STATUS);
@@ -59,6 +64,7 @@ public class Login {
         }, new NetConnection.FailCallback() {
             @Override
             public void onFail(String failResult) {
+                progressDialog.dismiss();
 
                 if(failCallback != null)
                 {
