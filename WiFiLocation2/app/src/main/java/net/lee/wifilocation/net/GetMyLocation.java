@@ -36,11 +36,12 @@ public class GetMyLocation {
                         case Config.RESULT_STATUS_SUCCESS :
 
                             int locationStatus = jsonObject.getInt(Config.KEY_LOCATION_STATUS);
+                            String areaName = jsonObject.getString(Config.KEY_AREA_NAME);
                             String locationName = jsonObject.getString(Config.KEY_LOCATION_NAME);
 
                             if (successCallback != null)
                             {
-                                successCallback.onSuccess(locationStatus,locationName);
+                                successCallback.onSuccess(locationStatus,areaName,locationName);
                             }
                             break;
                         case Config.RESULT_STATUS_FAIL:
@@ -75,7 +76,7 @@ public class GetMyLocation {
 
     public static interface SuccessCallback
     {
-        void onSuccess(int locationStatus, String locationName);
+        void onSuccess(int locationStatus,String areaName, String locationName);
     }
     public static interface FailCallback
     {

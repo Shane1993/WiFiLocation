@@ -185,8 +185,8 @@ public class FirstLayout extends LinearLayout implements View.OnClickListener, A
 //            locationInfo.setAreaName(Config.valueSelectedAreaName);
             new GetMyLocation(getContext(), locationInfo.toJSONString(), new GetMyLocation.SuccessCallback() {
                 @Override
-                public void onSuccess(int locationStatus, String locationName) {
-                    myLocationTv.setText(locationName);
+                public void onSuccess(int locationStatus,String areaName, String locationName) {
+                    myLocationTv.setText(areaName + "\n" + locationName);
 
                     switch (locationStatus)
                     {
@@ -194,7 +194,7 @@ public class FirstLayout extends LinearLayout implements View.OnClickListener, A
 
                             deviceLocation = new DeviceLocation();
                             deviceLocation.setUserName(Config.getCacheUserName(getContext()));
-                            deviceLocation.setAreaName(locationInfo.getAreaName());
+                            deviceLocation.setAreaName(areaName);
                             deviceLocation.setLocationName(locationName);
                             deviceLocation.save(getContext());
                             break;
