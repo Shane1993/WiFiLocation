@@ -34,10 +34,10 @@ public class GetAreaName {
                     {
                         case Config.RESULT_STATUS_SUCCESS:
 
-                            String areaName = jsonObject.getString(Config.KEY_AREA_NAME);
+                            String allAreaName = jsonObject.getString(Config.KEY_AREA_NAME);
                             if(successCallback != null)
                             {
-                                successCallback.onSuccess(areaName);
+                                successCallback.onSuccess(allAreaName);
                             }
                             break;
                         case Config.RESULT_STATUS_FAIL:
@@ -74,7 +74,7 @@ public class GetAreaName {
     }
 
     public static interface SuccessCallback {
-        void onSuccess(String areaName);
+        void onSuccess(String allAreaName);
     }
 
     public static interface FailCallback {

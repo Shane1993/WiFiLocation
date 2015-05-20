@@ -23,6 +23,7 @@ public class Config {
     public static final String KEY_REQUEST_BODY_NEWCONNECTPASSWORD = "newConnectPassword";
     public static final String KEY_REQUEST_BODY_MYDEVICES = "myDevices";
     public static final String KEY_REQUEST_BODY_INFONUMBER = "infoNumber";
+    public static final String KEY_REQUEST_BODU_AREA_NAME = "areaName";
 
     //These actions are the action commands send to the server
     public static final String ACTION_GET_AREA_NAME = "getAreaName";
@@ -37,6 +38,7 @@ public class Config {
     public static final String ACTION_GET_MY_DEVICES = "getMyDevices";
     public static final String ACTION_REFRESH_MY_DEVEICES = "refreshMyDevices";
     public static final String ACTION_GET_DEVICE_LOCATION = "getDeviceLocation";
+    public static final String ACTION_GET_OBJECT_ID = "getObjectId";
 
     //These keys are used to get the values send by server
     public static final String KEY_AREA_NAME = "areaName";
@@ -52,6 +54,7 @@ public class Config {
     public static final String KEY_DEVICE_LOCATION = "deviceLocation";
     public static final String KEY_LOCATION_NAME = "locationName";
     public static final String KEY_TIME = "time";
+    public static final String KEY_OBJECT_ID = "objectId";
 
     public static final String KEY_MANAGE_PASSWORD = "managePassword";
     public static final String VALUE_MANAGE_PASSWORD = "234567";

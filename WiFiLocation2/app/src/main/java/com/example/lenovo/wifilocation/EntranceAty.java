@@ -15,7 +15,8 @@ import cn.bmob.v3.Bmob;
 public class EntranceAty extends Activity {
 
     //Bmob”¶”√ID
-    private String Bmob_AppId = "1b31c55348aeab1a15e5263e668fb88a";
+//    private String Bmob_AppId = "1b31c55348aeab1a15e5263e668fb88a";
+    private String Bmob_AppId = "3233acd4c0aefbdc13bc96792208c71e";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

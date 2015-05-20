@@ -20,7 +20,9 @@ import android.widget.Toast;
 import net.lee.wifilocation.adapter.MyAdapter;
 import net.lee.wifilocation.config.Config;
 import net.lee.wifilocation.model.AreaInfo;
+import net.lee.wifilocation.net.GetAreaMap;
 import net.lee.wifilocation.net.GetAreaName;
+import net.lee.wifilocation.utils.FileUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,10 +66,36 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
 
         new GetAreaName(getContext(), new GetAreaName.SuccessCallback() {
             @Override
-            public void onSuccess(String areaName) {
+            public void onSuccess(String allAreaName) {
 
-                Config.valueAllAreaName = areaName;
+                Config.valueAllAreaName = allAreaName;
                 refreshListView();
+
+                //After getting the areaName from server, the next job is to download the map of every area.
+                for(final String areaName : allAreaName.split(","))
+                {
+                    new GetAreaMap(getContext(), areaName, new GetAreaMap.SuccessCallback() {
+                        @Override
+                        public void onSuccess(final String mapUrl) {
+
+                            //Remenber open a new thread to download file
+                            Runnable runnable = new Runnable() {
+                                @Override
+                                public void run() {
+                                    FileUtils fileUtils = new FileUtils();
+                                    System.out.println(fileUtils.downFile(mapUrl,"Wifilocation",areaName + ".jpg"));
+                                }
+                            };
+                            new Thread(runnable).start();
+                        }
+                    }, new GetAreaMap.FailCallback() {
+                        @Override
+                        public void onFail(String failResult) {
+                            Toast.makeText(getContext(),failResult,Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
             }
         }, new GetAreaName.FailCallback() {
             @Override
@@ -90,6 +118,18 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
             }
             adapter.notifyDataSetChanged();
 
+        }
+    }
+
+    @Override
+    protected void onVisibilityChanged(View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+        if (visibility == View.VISIBLE) {
+            if (Config.valueAreaChanged) {
+                locationList.clear();
+                refreshListView();
+                Config.valueAreaChanged = false;
+            }
         }
     }
 
@@ -175,7 +215,7 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
                             {
                                 Config.cacheManagePassword(getContext(),managePassword);
                                 ad.dismiss();
-                                showCreateDialog();
+                                openCreateAreaAty();
                             }
                             else
                             {
@@ -196,58 +236,61 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
             }
             else
             {
-                showCreateDialog();
+                openCreateAreaAty();
             }
         }
     }
 
-    private void showCreateDialog()
+    private void openCreateAreaAty()
     {
-        final View view = LayoutInflater.from(getContext()).inflate(R.layout.alerdialog, null);
-        final EditText alertEt = (EditText) view.findViewById(R.id.alertEt);
-        //Create a AlertDialog
-        final AlertDialog ad = new AlertDialog.Builder(getContext()).create();
-//            ad.setCanceledOnTouchOutside(false);
-        ad.setTitle("添加新区域");
-        ad.setView(view);
-        ad.setButton(DialogInterface.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (TextUtils.isEmpty(alertEt.getText().toString())) {
-                    Toast.makeText(getContext(), "请输入区域名称", Toast.LENGTH_SHORT).show();
-                } else {
-                    final String name = alertEt.getText().toString();
+        Intent intent = new Intent(getContext(),CreateAreaAty.class);
+        getContext().startActivity(intent);
 
-                    //Send the new area name to the server
-                    AreaInfo areaInfo = new AreaInfo(name);
-                    areaInfo.save(getContext(), new SaveListener() {
-                        @Override
-                        public void onSuccess() {
-
-                            locationList.add(name);
-                            //Tell the FirstLayout's spinner that area have change
-                            Config.valueAreaChanged = true;
-                            adapter.notifyDataSetChanged();
-                        }
-
-                        @Override
-                        public void onFailure(int i, String s) {
-
-                            Toast.makeText(getContext(), "创建区域失败：" + s, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-                    ad.dismiss();
-                }
-            }
-        });
-        ad.setButton(DialogInterface.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                ad.dismiss();
-            }
-        });
-        ad.show();
+//        final View view = LayoutInflater.from(getContext()).inflate(R.layout.alerdialog, null);
+//        final EditText alertEt = (EditText) view.findViewById(R.id.alertEt);
+//        //Create a AlertDialog
+//        final AlertDialog ad = new AlertDialog.Builder(getContext()).create();
+////            ad.setCanceledOnTouchOutside(false);
+//        ad.setTitle("添加新区域");
+//        ad.setView(view);
+//        ad.setButton(DialogInterface.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                if (TextUtils.isEmpty(alertEt.getText().toString())) {
+//                    Toast.makeText(getContext(), "请输入区域名称", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    final String name = alertEt.getText().toString();
+//
+//                    //Send the new area name to the server
+//                    AreaInfo areaInfo = new AreaInfo(name);
+//                    areaInfo.save(getContext(), new SaveListener() {
+//                        @Override
+//                        public void onSuccess() {
+//
+//                            locationList.add(name);
+//                            //Tell the FirstLayout's spinner that area have change
+//                            Config.valueAreaChanged = true;
+//                            adapter.notifyDataSetChanged();
+//                        }
+//
+//                        @Override
+//                        public void onFailure(int i, String s) {
+//
+//                            Toast.makeText(getContext(), "创建区域失败：" + s, Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
+//
+//                    ad.dismiss();
+//                }
+//            }
+//        });
+//        ad.setButton(DialogInterface.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                ad.dismiss();
+//            }
+//        });
+//        ad.show();
     }
 
     /**
