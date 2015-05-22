@@ -1,12 +1,12 @@
 package com.example.lenovo.wifilocation;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -113,41 +113,93 @@ public class MeasureActivity extends Activity implements View.OnClickListener {
             } else if (TextUtils.isEmpty(measureEt.getText().toString())) {
                 toast("请输入区域名称");
             } else {
-                isSuccess = 0;
-                for (LocationInfo locationInfoFinal : locationInfoFinalList) {
-                    //Set the location name
-                    locationInfoFinal.setLocationName(measureEt.getText().toString());
-                    locationInfoFinal.save(MeasureActivity.this, new SaveListener() {
-                        @Override
-                        public void onSuccess() {
-                            isSuccess++;
-                            if(isSuccess == locationInfoFinalList.size())
+
+                progressDialog = new ProgressDialog(MeasureActivity.this);
+                progressDialog.show();
+
+                Thread saveThread = new Thread(new Runnable() {
+
+                    boolean saveOver = false;
+                    boolean saveFail = false;
+
+                    @Override
+                    public void run() {
+
+                        isSuccess = 0;
+                        for (LocationInfo locationInfoFinal : locationInfoFinalList) {
+
+                            saveOver = false;
+
+                            //Set the location name
+                            locationInfoFinal.setLocationName(measureEt.getText().toString());
+                            locationInfoFinal.save(MeasureActivity.this, new SaveListener() {
+                                @Override
+                                public void onSuccess() {
+
+                                    System.out.println("MeasureAty===========CurrentThread : " + Thread.currentThread().getName());
+
+                                    isSuccess++;
+                                    saveOver = true;
+
+                                    if (isSuccess == locationInfoFinalList.size()) {
+                                        dialogHandler.sendEmptyMessage(DIALOG_CANCEL);
+                                        toast("上传位置信息成功");
+                                        //Close the activity
+                                        finish();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(int i, String s) {
+
+                                    saveOver = true;
+                                    saveFail = true;
+                                    dialogHandler.sendEmptyMessage(DIALOG_CANCEL);
+                                    toast("上传位置信息失败 : " + s);
+                                }
+                            });
+
+                            System.out.println("MeasureAty===========CurrentThread : " + Thread.currentThread().getName());
+
+                            System.out.println("MeasureAty===========This is before while");
+                            //Wait still a data sending completely
+                            while(!saveOver);
+                            System.out.println("MeasureAty===========This is after while");
+
+                            if (saveFail)
                             {
-                                toast("上传位置信息成功");
-                                //Close the activity
-                                finish();
+                                break;
                             }
+
                         }
 
-                        @Override
-                        public void onFailure(int i, String s) {
-                            toast("上传位置信息失败 : " + s);
-                        }
-                    });
-//                    System.out.println("Before sleep");
-//                    try {
-//                        Thread.sleep(1000);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                    System.out.println("after sleep");
-                }
+                        System.out.println("MeasureAty===========CurrentThread : " + Thread.currentThread().getName());
+                        //Quit the thread after saveOver
+                        return;
+
+                    }
+                });
+                saveThread.start();
 
             }
         } else if (v.getId() == R.id.measureCancleBtn) {
             finish();
         }
     }
+
+    private final int DIALOG_CANCEL = 1;
+    private ProgressDialog progressDialog;
+    private Handler dialogHandler = new Handler()
+    {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == DIALOG_CANCEL)
+            {
+                progressDialog.dismiss();
+            }
+        }
+    };
 
     private Map<String, ArrayList<LocationInfo>> locationMap = new HashMap<String, ArrayList<LocationInfo>>();
 

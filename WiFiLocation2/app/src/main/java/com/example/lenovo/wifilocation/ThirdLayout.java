@@ -1,6 +1,7 @@
 package com.example.lenovo.wifilocation;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -52,6 +53,9 @@ public class ThirdLayout extends LinearLayout implements View.OnClickListener, O
     //Use handler to get new data timing
     private Handler mHandler;
 
+    private Button reviewMapBtn;
+    private String areaMapName;
+
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -59,6 +63,7 @@ public class ThirdLayout extends LinearLayout implements View.OnClickListener, O
         myDevicesSpinner = (Spinner) findViewById(R.id.devicesSelectSp);
         deviceLocationLV = (ListView) findViewById(R.id.deviceLocationInThirdLV);
         searchDeviceBtn = (Button) findViewById(R.id.searchDeviceLocationBtn);
+        reviewMapBtn = (Button) findViewById(R.id.reviewMapBtn);
 
         myDeviceList = new ArrayList<String>();
         myDeviceSpinnerAdapter = new ArrayAdapter<String>(getContext(), R.layout.spinner_item, myDeviceList);
@@ -71,6 +76,7 @@ public class ThirdLayout extends LinearLayout implements View.OnClickListener, O
         deviceLocationLV.setAdapter(deviceLocationAdapter);
 
         searchDeviceBtn.setOnClickListener(this);
+        reviewMapBtn.setOnClickListener(this);
 
         mHandler = new Handler() {
             @Override
@@ -83,6 +89,9 @@ public class ThirdLayout extends LinearLayout implements View.OnClickListener, O
                                 if (haveData) {
                                     deviceLocationList.add(0, list.get(0));
                                     deviceLocationAdapter.notifyDataSetChanged();
+
+                                    areaMapName = list.get(0).getAreaName();
+                                    reviewMapBtn.setVisibility(View.VISIBLE);
                                 }else
                                 {
                                     isTracking = false;
@@ -94,7 +103,6 @@ public class ThirdLayout extends LinearLayout implements View.OnClickListener, O
                     @Override
                     public void onFail(String failResult) {
                         Toast.makeText(getContext(), failResult, Toast.LENGTH_SHORT).show();
-
 
                     }
                 });
@@ -116,7 +124,6 @@ public class ThirdLayout extends LinearLayout implements View.OnClickListener, O
                     @Override
                     public void onSuccess(String myDevices) {
 
-                        System.out.println("devices" + myDevices);
                         if (!myDevices.equals("null")) {
                             Config.cacheAllDeivecsName(getContext(), myDevices);
                             refreshSpinner();
@@ -161,7 +168,7 @@ public class ThirdLayout extends LinearLayout implements View.OnClickListener, O
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.searchDeviceLocationBtn) {
-            if (!myDevicesSpinner.getSelectedItem().toString().equals("无")) {
+            if (!myDevicesSpinner.getSelectedItem().toString().equals("无") && !myDevicesSpinner.getSelectedItem().toString().equals("")) {
                 if (!isTracking) {
                     isTracking = true;
                     searchDeviceBtn.setText("停止追踪");
@@ -174,9 +181,13 @@ public class ThirdLayout extends LinearLayout implements View.OnClickListener, O
                                         if (haveData) {
                                             for (DeviceLocation dl : list) {
                                                 deviceLocationList.add(dl);
-                                                System.out.println(dl.getAreaName() + " " + dl.getTime());
+                                                System.out.println("ThirdLayout==============device information : " + dl.getAreaName() + " " + dl.getTime());
                                             }
                                             deviceLocationAdapter.notifyDataSetChanged();
+
+                                            //Document the areaName for getting the map
+                                            areaMapName = list.get(0).getAreaName();
+                                            reviewMapBtn.setVisibility(View.VISIBLE);
 
                                             mHandler.sendEmptyMessageDelayed(0, 5000);
 
@@ -187,6 +198,9 @@ public class ThirdLayout extends LinearLayout implements View.OnClickListener, O
                                             dl.setTime("");
                                             deviceLocationList.add(dl);
                                             deviceLocationAdapter.notifyDataSetChanged();
+
+                                            areaMapName = "";
+                                            reviewMapBtn.setVisibility(View.INVISIBLE);
 
                                             isFirstClick = true;
                                             isTracking = false;
@@ -218,6 +232,13 @@ public class ThirdLayout extends LinearLayout implements View.OnClickListener, O
                 Toast.makeText(getContext(),"请先选择设备",Toast.LENGTH_SHORT).show();
             }
         }
+        else if(v.getId() == R.id.reviewMapBtn)
+        {
+
+            Intent intent = new Intent(getContext(),MapAty.class);
+            intent.putExtra(Config.KEY_AREA_NAME,areaMapName);
+            getContext().startActivity(intent);
+        }
     }
 
     @Override
@@ -229,6 +250,8 @@ public class ThirdLayout extends LinearLayout implements View.OnClickListener, O
         mHandler.removeMessages(0);
         deviceLocationList.clear();
         deviceLocationAdapter.notifyDataSetChanged();
+
+        reviewMapBtn.setVisibility(View.INVISIBLE);
     }
 
     @Override

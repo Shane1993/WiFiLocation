@@ -54,7 +54,7 @@ public class NetConnection {
                     public void onSuccess(Object result) {
                         // TODO Auto-generated method stub
 
-                        System.out.println("NetConnection's onSuccess");
+                        System.out.println("NetConnection's onSuccess" + result.toString());
 
                         if(successCallback != null)
                         {

@@ -1,9 +1,12 @@
 package com.example.lenovo.wifilocation;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.text.method.PasswordTransformationMethod;
 import android.util.AttributeSet;
@@ -19,20 +22,17 @@ import android.widget.Toast;
 
 import net.lee.wifilocation.adapter.MyAdapter;
 import net.lee.wifilocation.config.Config;
-import net.lee.wifilocation.model.AreaInfo;
-import net.lee.wifilocation.net.GetAreaMap;
+import net.lee.wifilocation.net.GetAreaMapUrl;
 import net.lee.wifilocation.net.GetAreaName;
 import net.lee.wifilocation.utils.FileUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.bmob.v3.listener.SaveListener;
-
 /**
  * Created by lenovo on 2015/4/18.
  */
-public class SecondLayout extends LinearLayout implements View.OnClickListener, AdapterView.OnItemClickListener{
+public class SecondLayout extends LinearLayout implements View.OnClickListener, AdapterView.OnItemClickListener {
 
     public SecondLayout(Context context) {
         super(context);
@@ -57,7 +57,7 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
         locationListView = (ListView) findViewById(R.id.locationLV);
 
         locationList = new ArrayList<String>();
-        adapter = new MyAdapter(getContext(),locationList);
+        adapter = new MyAdapter(getContext(), locationList);
         locationListView.setAdapter(adapter);
 
         measureBtn.setOnClickListener(this);
@@ -65,55 +65,97 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
         locationListView.setOnItemClickListener(this);
 
         new GetAreaName(getContext(), new GetAreaName.SuccessCallback() {
+
             @Override
             public void onSuccess(String allAreaName) {
 
                 Config.valueAllAreaName = allAreaName;
                 refreshListView();
 
-                //After getting the areaName from server, the next job is to download the map of every area.
-                for(final String areaName : allAreaName.split(","))
-                {
-                    new GetAreaMap(getContext(), areaName, new GetAreaMap.SuccessCallback() {
-                        @Override
-                        public void onSuccess(final String mapUrl) {
+                progressDialog = new ProgressDialog(getContext());
+                progressDialog.show();
 
-                            //Remenber open a new thread to download file
-                            Runnable runnable = new Runnable() {
+                Thread downloadThread = new Thread(new Runnable() {
+
+                    boolean downloadOver = false;
+                    boolean downloaFail = false;
+
+                    @Override
+                    public void run() {
+                        //After getting the areaName from server, the next job is to download the map of every area.
+                        for (final String areaName : Config.valueAllAreaName.split(",")) {
+
+                            downloadOver = false;
+
+                            new GetAreaMapUrl(getContext(), areaName, new GetAreaMapUrl.SuccessCallback() {
                                 @Override
-                                public void run() {
-                                    FileUtils fileUtils = new FileUtils();
-                                    System.out.println(fileUtils.downFile(mapUrl,"Wifilocation",areaName + ".jpg"));
+                                public void onSuccess(final String mapUrl) {
+
+                                    //Remenber open a new thread to download file
+                                    Runnable runnable = new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            FileUtils fileUtils = new FileUtils();
+                                            System.out.println(fileUtils.downFile(mapUrl, "Wifilocation", areaName + ".jpg"));
+
+                                            downloadOver = true;
+
+                                            return;
+
+                                        }
+                                    };
+                                    new Thread(runnable).start();
                                 }
-                            };
-                            new Thread(runnable).start();
+                            }, new GetAreaMapUrl.FailCallback() {
+                                @Override
+                                public void onFail(String failResult) {
+                                    Toast.makeText(getContext(), failResult, Toast.LENGTH_SHORT).show();
+                                    downloadOver = true;
+                                    downloaFail = true;
+                                }
+                            });
+
+                            System.out.println("SecondLayout==============This is before while");
+                            while (!downloadOver) ;
+                            System.out.println("SecondLayout==============This is after while");
+
+                            if (downloaFail) {
+                                break;
+                            }
+
                         }
-                    }, new GetAreaMap.FailCallback() {
-                        @Override
-                        public void onFail(String failResult) {
-                            Toast.makeText(getContext(),failResult,Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
+                        dialogHandler.sendEmptyMessage(DIALOG_CANCEL);
+                    }
+                });
+
+                downloadThread.start();
 
             }
         }, new GetAreaName.FailCallback() {
             @Override
             public void onFail(String failResult) {
-                Toast.makeText(getContext(),failResult,Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), failResult, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    private final int DIALOG_CANCEL = 1;
+    private ProgressDialog progressDialog;
+    private Handler dialogHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == DIALOG_CANCEL) {
+                progressDialog.dismiss();
+            }
+        }
+    };
 
-    private void refreshListView()
-    {
+    private void refreshListView() {
         String str = Config.valueAllAreaName;
-        if(str != null)
-        {
+        if (str != null) {
             String[] areaNameArray = str.split(",");
-            for(String s : areaNameArray)
-            {
+            for (String s : areaNameArray) {
                 locationList.add(s);
             }
             adapter.notifyDataSetChanged();
@@ -135,15 +177,11 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
 
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.measureBtn)
-        {
-            if(Config.valueManageSelectedAreaName == null)
-            {
-                Toast.makeText(getContext(),"请先选择当前区域",Toast.LENGTH_SHORT).show();
-            }
-            else
-            {
-                if(Config.getCacheManagePassword(getContext()) == null) {
+        if (v.getId() == R.id.measureBtn) {
+            if (Config.valueManageSelectedAreaName == null) {
+                Toast.makeText(getContext(), "请先选择当前区域", Toast.LENGTH_SHORT).show();
+            } else {
+                if (Config.getCacheManagePassword(getContext()) == null) {
 
                     final View view = LayoutInflater.from(getContext()).inflate(R.layout.alerdialog, null);
                     final EditText passwordEt = (EditText) view.findViewById(R.id.alertEt);
@@ -161,9 +199,8 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
                                 Toast.makeText(getContext(), "请输入密码", Toast.LENGTH_SHORT).show();
                             } else {
                                 final String managePassword = passwordEt.getText().toString();
-                                if(managePassword.equals(Config.VALUE_MANAGE_PASSWORD))
-                                {
-                                    Config.cacheManagePassword(getContext(),managePassword);
+                                if (managePassword.equals(Config.VALUE_MANAGE_PASSWORD)) {
+                                    Config.cacheManagePassword(getContext(), managePassword);
                                     Intent intent = new Intent(getContext(), MeasureActivity.class);
                                     intent.putExtra(Config.KEY_AREA_NAME, Config.valueManageSelectedAreaName);
                                     getContext().startActivity(intent);
@@ -182,18 +219,15 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
                     });
                     ad.show();
 
-                }
-                else
-                {
+                } else {
                     Intent intent = new Intent(getContext(), MeasureActivity.class);
                     intent.putExtra(Config.KEY_AREA_NAME, Config.valueManageSelectedAreaName);
                     getContext().startActivity(intent);
                 }
 
             }
-        }else if(v.getId() == R.id.createLocationBtn)
-        {
-            if(Config.getCacheManagePassword(getContext()) == null) {
+        } else if (v.getId() == R.id.createLocationBtn) {
+            if (Config.getCacheManagePassword(getContext()) == null) {
 
                 final View view = LayoutInflater.from(getContext()).inflate(R.layout.alerdialog, null);
                 final EditText passwordEt = (EditText) view.findViewById(R.id.alertEt);
@@ -211,14 +245,11 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
                             Toast.makeText(getContext(), "请输入密码", Toast.LENGTH_SHORT).show();
                         } else {
                             final String managePassword = passwordEt.getText().toString();
-                            if(managePassword.equals(Config.VALUE_MANAGE_PASSWORD))
-                            {
-                                Config.cacheManagePassword(getContext(),managePassword);
+                            if (managePassword.equals(Config.VALUE_MANAGE_PASSWORD)) {
+                                Config.cacheManagePassword(getContext(), managePassword);
                                 ad.dismiss();
                                 openCreateAreaAty();
-                            }
-                            else
-                            {
+                            } else {
                                 ad.dismiss();
                             }
 
@@ -233,17 +264,14 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
                 });
                 ad.show();
 
-            }
-            else
-            {
+            } else {
                 openCreateAreaAty();
             }
         }
     }
 
-    private void openCreateAreaAty()
-    {
-        Intent intent = new Intent(getContext(),CreateAreaAty.class);
+    private void openCreateAreaAty() {
+        Intent intent = new Intent(getContext(), CreateAreaAty.class);
         getContext().startActivity(intent);
 
 //        final View view = LayoutInflater.from(getContext()).inflate(R.layout.alerdialog, null);
@@ -295,6 +323,7 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
 
     /**
      * This is short click on items
+     *
      * @param parent
      * @param view
      * @param position
@@ -305,7 +334,7 @@ public class SecondLayout extends LinearLayout implements View.OnClickListener, 
 
         Config.valueManageSelectedAreaName = locationList.get(position);
 
-        Log.i("onItemClick","Config.valueManageSelectedAreaName:" + Config.valueManageSelectedAreaName );
+        Log.i("onItemClick", "Config.valueManageSelectedAreaName:" + Config.valueManageSelectedAreaName);
         //Tell the ListView I have changed! Refresh the list quickly.
         adapter.notifyDataSetChanged();
     }

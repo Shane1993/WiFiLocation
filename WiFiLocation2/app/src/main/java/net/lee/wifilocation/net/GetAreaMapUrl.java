@@ -18,9 +18,9 @@ import cn.bmob.v3.listener.GetListener;
 /**
  * Created by LEE on 2015/5/20.
  */
-public class GetAreaMap {
+public class GetAreaMapUrl {
 
-    public GetAreaMap(final Context context, String areaName, final SuccessCallback successCallback, final FailCallback failCallback) {
+    public GetAreaMapUrl(final Context context, String areaName, final SuccessCallback successCallback, final FailCallback failCallback) {
         new NetConnection(context, Config.KEY_CLOUD_CODE_NAME, new NetConnection.SuccessCallback() {
             @Override
             public void onSuccess(String successResult) {

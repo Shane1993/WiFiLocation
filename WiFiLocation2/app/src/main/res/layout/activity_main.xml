@@ -226,11 +226,32 @@
                     android:background="#ffe1e1e1"
                     >
 
-                    <TextView
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="最近的位置和时间:"
-                        android:textSize="25sp" />
+                        android:layout_height="48dp"
+                        android:orientation="horizontal"
+                        android:paddingLeft="@dimen/activity_horizontal_margin"
+                        android:paddingRight="@dimen/activity_horizontal_margin">
+
+                        <Button
+                            android:id="@+id/reviewMapBtn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:text="查看地图"
+                            android:visibility="invisible"
+                            />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="最近的位置和时间:"
+                            android:layout_alignBaseline="@id/reviewMapBtn"
+                            android:textSize="25sp" />
+
+                    </RelativeLayout>
+
+
 
                     <ListView
                         android:id="@+id/deviceLocationInThirdLV"

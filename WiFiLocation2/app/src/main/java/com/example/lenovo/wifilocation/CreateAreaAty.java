@@ -35,6 +35,7 @@ public class CreateAreaAty extends Activity implements View.OnClickListener{
     Button selectPicBtn,okBtn,cancelBtn;
 
     String picturePath;
+    boolean selectMap = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +44,7 @@ public class CreateAreaAty extends Activity implements View.OnClickListener{
 
         new MyActionBarConfig(getActionBar(),null);
 
-        imageView = (ImageView) findViewById(R.id.mapImageView);
+        imageView = (ImageView) findViewById(R.id.selectMapImageView);
         editText = (EditText) findViewById(R.id.createAreaEt);
         selectPicBtn = (Button) findViewById(R.id.selectMapBtn);
         okBtn = (Button) findViewById(R.id.createAreaOkBtn);
@@ -68,7 +69,7 @@ public class CreateAreaAty extends Activity implements View.OnClickListener{
             {
                 Toast.makeText(CreateAreaAty.this,"«Î ‰»Î√˚≥∆",Toast.LENGTH_SHORT).show();
 
-            } else if(imageView == null)
+            } else if(!selectMap)
             {
                 Toast.makeText(CreateAreaAty.this,"«Î—°‘ÒÕº∆¨",Toast.LENGTH_SHORT).show();
             }
@@ -133,6 +134,7 @@ public class CreateAreaAty extends Activity implements View.OnClickListener{
                 cursor.close();
 
                 imageView.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+                selectMap = true;
             }
         }
     }

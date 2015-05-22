@@ -66,6 +66,10 @@
             android:theme="@style/My_Theme"
             android:label="创建新区域"
             />
+        <activity android:name=".MapAty"
+            android:theme="@style/My_Theme"
+            android:label="地图"
+            />
 
     </application>
 
