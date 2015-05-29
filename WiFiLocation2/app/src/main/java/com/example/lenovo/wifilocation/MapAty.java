@@ -37,7 +37,7 @@ public class MapAty extends Activity {
         File file = fileUtils.getFile(path, pictureName + ".jpg");
 
         final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 8;
+        options.inSampleSize = 1;
 
         Bitmap bmp = BitmapFactory.decodeFile(file.getAbsolutePath(),options);
 

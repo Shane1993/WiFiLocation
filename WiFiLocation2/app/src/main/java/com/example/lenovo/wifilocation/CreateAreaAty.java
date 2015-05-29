@@ -1,6 +1,7 @@
 package com.example.lenovo.wifilocation;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
@@ -75,6 +76,9 @@ public class CreateAreaAty extends Activity implements View.OnClickListener{
             }
             else
             {
+                final ProgressDialog pd = new ProgressDialog(CreateAreaAty.this);
+                pd.show();
+
                 final String areaName = editText.getText().toString();
                 //Send the picture to server
                 final BmobFile file = new BmobFile(new File(picturePath));
@@ -90,6 +94,8 @@ public class CreateAreaAty extends Activity implements View.OnClickListener{
                             @Override
                             public void onSuccess() {
 
+                                pd.dismiss();
+
                                 Config.valueAllAreaName = Config.valueAllAreaName + "," + areaName;
                                 Config.valueAreaChanged = true;
                                 System.out.println("CreateAreaAty========Success");
@@ -99,6 +105,7 @@ public class CreateAreaAty extends Activity implements View.OnClickListener{
 
                             @Override
                             public void onFailure(int i, String s) {
+                                pd.dismiss();
                                 Toast.makeText(CreateAreaAty.this, "创建区域失败 : " + s, Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -107,6 +114,7 @@ public class CreateAreaAty extends Activity implements View.OnClickListener{
 
                     @Override
                     public void onFailure(int i, String s) {
+                        pd.dismiss();
                         Toast.makeText(CreateAreaAty.this, "上传图片失败 : " + s, Toast.LENGTH_SHORT).show();
                     }
                 });
